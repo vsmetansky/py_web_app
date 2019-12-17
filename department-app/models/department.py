@@ -18,3 +18,6 @@ class Department(DB.Model):
 
     def __repr__(self):
         return f'<Department {self.name}>'
+
+    def __str__(self):
+        return str(self.__dict___)
