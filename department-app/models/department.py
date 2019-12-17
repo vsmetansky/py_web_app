@@ -1,6 +1,6 @@
 """Provides user with Department class.
 
-Exported classes: 
+Exported classes:
 1. Department (ORM representation for 'department' table in a database).
 """
 

@@ -1,6 +1,6 @@
 """Provides user with Employee class.
 
-Exported classes: 
+Exported classes:
 1. Employee (ORM representation for 'employee' table in a database).
 """
 
