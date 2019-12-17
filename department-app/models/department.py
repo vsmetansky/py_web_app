@@ -15,3 +15,6 @@ class Department(DB.Model):
 
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(50))
+
+    def __repr__(self):
+        return f'<Department {self.name}>'

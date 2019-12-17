@@ -17,3 +17,6 @@ class Employee(DB.Model):
     name = DB.Column(DB.String(50))
     birthdate = DB.Column(DB.Date)
     salary = DB.Column(DB.Numeric)
+
+    def __repr__(self):
+        return f'<Employee {self.name}>'
