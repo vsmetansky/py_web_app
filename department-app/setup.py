@@ -1,3 +1,5 @@
+"""Provides user with setup configuration."""
+
 from setuptools import setup, find_packages
 
 

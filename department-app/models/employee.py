@@ -1,10 +1,19 @@
+"""Provides user with Employee class.
+
+Exported classes: 
+1. Employee (ORM representation for 'employee' table in a database).
+"""
+
 from flask import g
 
-db = g.db
+DB = g.db
 
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
-    name = db.Column(db.String(50))
-    birthdate = db.Column(db.Date)
-    salary = db.Column(db.Numeric)
+
+class Employee(DB.Model):
+    """ORM representation for 'employee' table in a database."""
+
+    id = DB.Column(DB.Integer, primary_key=True)
+    department_id = DB.Column(DB.Integer, DB.ForeignKey('department.id'))
+    name = DB.Column(DB.String(50))
+    birthdate = DB.Column(DB.Date)
+    salary = DB.Column(DB.Numeric)

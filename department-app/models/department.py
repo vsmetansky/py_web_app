@@ -1,9 +1,17 @@
+"""Provides user with Department class.
+
+Exported classes: 
+1. Department (ORM representation for 'department' table in a database).
+"""
+
 from flask import g
 
-db = g.db
+
+DB = g.db
 
 
-class Department(db.Model):
-    __tablename__ = 'department'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+class Department(DB.Model):
+    """ORM representation for 'department' table in a database."""
+
+    id = DB.Column(DB.Integer, primary_key=True)
+    name = DB.Column(DB.String(50))
