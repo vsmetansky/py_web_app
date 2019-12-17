@@ -1,0 +1,14 @@
+language: 
+  - python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - python department-app/setup.py install
+  - pip install pylint
+  - pip install coveralls 
+script:
+  - pylint --output-format=text department-app
+after_success: 
+  - coveralls
