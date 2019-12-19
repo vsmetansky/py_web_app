@@ -7,8 +7,9 @@ python:
 install:
   - python department-app/setup.py install
   - pip install pylint
+  - pip install pylint-flask-sqlalchemy
   - pip install coveralls 
 script:
-  - pylint --output-format=text department-app
+  - pylint --output-format=text --load-plugins pylint_flask_sqlalchemy department-app
 after_success: 
   - coveralls
