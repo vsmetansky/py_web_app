@@ -11,5 +11,6 @@ setup(
         'Flask >= 1.1.1',
         'Flask-Migrate >= 2.5.2',
         'Flask-SQLAlchemy >= 2.4.1',
+        'PyMySQL >= 0.9.3'
     ),
 )
