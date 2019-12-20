@@ -1,13 +1,28 @@
 """Application's main module. Runs Flask server."""
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from models import department, employee
+
+from rest.departments import DepartmentApi, DepartmentsApi
+from rest.employees import EmployeeApi, EmployeesApi
+
+from extensions import api, db, migrate
+from flask import Flask, got_request_exception
 from config import Config
+import logging
 
 
-APP = Flask(__name__)
-APP.config.from_object(Config)
-DB = SQLAlchemy(APP)
-MIGRATE = Migrate(APP, DB)
+def log_exception(sender, exception, **extra):
+    sender.logger.debug('Got exception during processing: %s', exception)
 
-from models import employee, department
+
+app = Flask(__name__)
+app.config.from_object(Config)
+db.init_app(app)
+migrate.init_app(app, db)
+
+api.add_resource(DepartmentsApi, '/departments')
+api.add_resource(DepartmentApi, '/departments/<int:id>')
+api.add_resource(EmployeesApi, '/employees')
+api.add_resource(EmployeeApi, '/employees/<int:id>')
+
+api.init_app(app)
+got_request_exception.connect(log_exception, app)

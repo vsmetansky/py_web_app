@@ -1,4 +1,4 @@
-from app import DB
+from extensions import db
 
 """Provides user with Operator class.
 
@@ -19,17 +19,18 @@ class Operator:
         return model.query.get(id)
 
     @classmethod
-    def add(cls, value):
-        DB.session.add(value)
-        DB.session.commit()
+    def insert(cls, value):
+        db.session.add(value)
+        db.session.commit()
 
     @classmethod
-    def remove(cls, value):
-        DB.session.delete(value)
-        DB.session.commit()
+    def remove(cls, model, id):
+        to_delete = cls.get_by_id(model, id)
+        db.session.delete(to_delete)
+        db.session.commit()
 
     @classmethod
-    def update(cls, model, value):
-        old_value = model.query.get(value.id)
-        old_value = value
-        DB.session.commit()
+    def update(cls, model, upd_data):
+        old_value = model.query.get(upd_data.get('id'))
+        model.query.filter_by(id=upd_data.get('id')).update(upd_data)
+        db.session.commit()

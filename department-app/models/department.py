@@ -4,17 +4,15 @@ Exported classes:
 1. Department (ORM representation for 'department' table in a database).
 """
 
-from app import DB
+from extensions import db
+from .jsonserializer import JsonSerializer
 
 
-class Department(DB.Model):
+class Department(db.Model, JsonSerializer):
     """ORM representation for 'department' table in a database."""
 
-    id = DB.Column(DB.Integer, primary_key=True)
-    name = DB.Column(DB.String(50), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
     def __repr__(self):
         return f'<Department {self.name}>'
-
-    def __str__(self):
-        return str(self.__dict___)
