@@ -7,7 +7,6 @@ from rest.employees import EmployeeApi, EmployeesApi
 from extensions import api, db, migrate
 from flask import Flask, got_request_exception
 from config import Config
-import logging
 
 
 def log_exception(sender, exception, **extra):
