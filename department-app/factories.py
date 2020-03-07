@@ -24,7 +24,14 @@ def create_app():
 
     return app
 
-def create_test_app():
+def create_test_app(api_used=False):
     app = Flask(__name__)
     app.config.from_envvar('TEST_CONFIG')
+
+    db.init_app(app)
+
+    if api_used:
+        add_resources(api)
+        api.init_app(app)
+
     return app
