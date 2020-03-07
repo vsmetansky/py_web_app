@@ -22,6 +22,7 @@ class Operator:
     def insert(cls, value):
         db.session.add(value)
         db.session.commit()
+        return value.id
 
     @classmethod
     def remove(cls, model, id):
@@ -34,3 +35,5 @@ class Operator:
         if old_value.get('id'):
             model.query.filter_by(id=old_value['id']).update(upd_data)
             db.session.commit()
+            return True
+        return False
