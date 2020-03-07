@@ -1,6 +1,4 @@
-from abc import ABC
-
-class Randomizer(ABC):
+class Randomizer():
     @classmethod
     def random(cls):
         pass

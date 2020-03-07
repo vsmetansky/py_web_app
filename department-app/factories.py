@@ -5,8 +5,6 @@ from models import department, employee
 from rest.departments import DepartmentApi, DepartmentsApi
 from rest.employees import EmployeeApi, EmployeesApi
 from extensions import api, db, migrate
-from config import Config
-
 
 def add_resources(api):
     api.add_resource(DepartmentsApi, '/departments')
@@ -16,7 +14,7 @@ def add_resources(api):
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_envvar('APP_CONFIG')
 
     add_resources(api)
 
@@ -26,8 +24,7 @@ def create_app():
 
     return app
 
-
-
 def create_test_app():
     app = Flask(__name__)
+    app.config.from_envvar('TEST_CONFIG')
     return app

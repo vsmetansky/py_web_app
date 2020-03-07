@@ -14,7 +14,7 @@ from service.operator import Operator
 MIN_SALARY = 500
 MAX_SALARY = 10000
 FAKE = Faker()
-FAKE.add_provder(date_time)
+FAKE.add_provider(date_time)
 
 class Employee(db.Model, JsonSerializer, Randomizer):
     """ORM representation for 'employee' table in the database."""
