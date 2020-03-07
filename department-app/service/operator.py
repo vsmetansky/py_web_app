@@ -25,12 +25,12 @@ class Operator:
 
     @classmethod
     def remove(cls, model, id):
-        model.query.delete().where
-        db.session.delete(to_delete)
+        model.query.filter_by(id=id).delete()
         db.session.commit()
 
     @classmethod
     def update(cls, model, upd_data):
         old_value = model.query.get(upd_data.get('id'))
-        model.query.filter_by(id=upd_data.get('id')).update(upd_data)
-        db.session.commit()
+        if old_value.get('id'):
+            model.query.filter_by(id=old_value['id']).update(upd_data)
+            db.session.commit()
