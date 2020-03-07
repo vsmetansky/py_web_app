@@ -25,7 +25,7 @@ class Operator:
 
     @classmethod
     def remove(cls, model, id):
-        to_delete = cls.get_by_id(model, id)
+        model.query.delete().where
         db.session.delete(to_delete)
         db.session.commit()
 

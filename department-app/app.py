@@ -9,10 +9,6 @@ from flask import Flask, got_request_exception
 from config import Config
 
 
-def log_exception(sender, exception, **extra):
-    sender.logger.debug('Got exception during processing: %s', exception)
-
-
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
@@ -24,4 +20,3 @@ api.add_resource(EmployeesApi, '/employees')
 api.add_resource(EmployeeApi, '/employees/<int:id>')
 
 api.init_app(app)
-got_request_exception.connect(log_exception, app)

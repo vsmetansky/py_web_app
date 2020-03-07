@@ -9,8 +9,6 @@ class JsonSerializer:
         val = getattr(self, key)
         if isinstance(val, date):
             return str(val)
-        elif isinstance(val, Decimal):
-            return str(val)
         return val
 
     def json(self):
