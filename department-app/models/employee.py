@@ -1,23 +1,37 @@
-"""Provides user with Employee class.
+"""Provides user with Department class.
 
 Exported classes:
-1. Employee (ORM representation for 'employee' table in the database).
+    Department: ORM representation for 'department' table in the database.
+
+Exported constants:
+    MIN_SALARY: Declares minimal salary for an employee.
+    MAX_SALARY: Declares max salary for an employee.
 """
+
 from faker import Faker
 from faker.providers import date_time
 
 from extensions import db
-from .jsonserializer import JsonSerializer
-from .randomizer import Randomizer
+from models.utility.jsonserializer import JsonSerializer
+from models.utility.randomizer import Randomizer
 from service.operator import Operator
 
 MIN_SALARY = 500
 MAX_SALARY = 10000
-FAKE = Faker()
-FAKE.add_provider(date_time)
+
 
 class Employee(db.Model, JsonSerializer, Randomizer):
-    """ORM representation for 'employee' table in the database."""
+    """ORM representation for 'employee' table in the database.
+
+    This class is, basically, a relation schema for 'employee'
+    table. An instance of the class represents a row in the table.
+
+    Attributes:
+        name: A string corresponding to employee's name.
+        birthdate: A date object representing employee's birthdate.
+        salary: An integer representing employee's salary.
+        department_id: An integer id of the department where employee works.
+    """
 
     id = db.Column(db.Integer, primary_key=True)
     department_id = db.Column(db.Integer, db.ForeignKey(
@@ -28,11 +42,20 @@ class Employee(db.Model, JsonSerializer, Randomizer):
 
     @classmethod
     def random(cls):
+        """Generates a random instance of the class.
+
+        Returns:
+            An instance of the class with randomly generated
+            attributes.
+        """
+        fake = Faker()
+        fake.add_provider(date_time)
         return Employee(
-            name=FAKE.name(),
-            birthdate=FAKE.date_between(start_date='-50y', end_date='-18y'),
-            salary=FAKE.random_int(MIN_SALARY, MAX_SALARY, step=1),
-            department_id=FAKE.random_element(elements=tuple(e.id for e in Operator.get_all(Employee)))
+            name=fake.name(),
+            birthdate=fake.date_between(start_date='-50y', end_date='-18y'),
+            salary=fake.random_int(MIN_SALARY, MAX_SALARY, step=1),
+            department_id=fake.random_element(elements=tuple(
+                e.id for e in Operator.get_all(Employee)))
         )
 
     def __repr__(self):
