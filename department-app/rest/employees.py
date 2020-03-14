@@ -6,7 +6,7 @@ from flask_restful import Resource, reqparse
 
 from models.employee import Employee
 from service.operator import Operator
-from .json_response import data_response, error_response
+from rest.utility.jsonresponse import data_response, error_response
 
 parser = reqparse.RequestParser()
 
@@ -34,7 +34,7 @@ class EmployeesApi(Resource):
             return error_response(400)
 
     def __employee_from_raw(self, raw_data):
-        return Employee(department_id=raw_data['department_id'], 
+        return Employee(department_id=raw_data['department_id'],
                         name=raw_data['name'], salary=raw_data['salary'],
                         birthdate=self.__date_from_raw(raw_data['birthdate']))
 

@@ -1,32 +1,61 @@
+"""Contains REST endpoints for performing CRUD operations on department table."""
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from flask_restful import Resource, reqparse
 
 from models.department import Department
 from service.operator import Operator
-from rest.json_response import data_response, error_response
+from rest.utility.jsonresponse import data_response, error_response
 
 parser = reqparse.RequestParser()
 
 
 class DepartmentsApi(Resource):
+    """Contains GET and POST request handlers for department table.
+
+    Given class groups handlers which do not require item's id to
+    perform a database request.
+    """
+
     def get(self):
+        """Returns all the departments from the db using data_response."""
+
         departments = Operator.get_all(Department)
         return data_response(Department.json_list(departments))
 
     def post(self):
+        """Adds a department to the database.
+
+        Returns:
+            Department's id using data_response or
+            error object using error_response.
+        """
+
         parser.add_argument('name', type=str)
         try:
             raw_data = parser.parse_args()
             department = Department(name=raw_data['name'])
-            Operator.insert(department)
-            return data_response(department.json())
+            return data_response(Operator.insert(department))
         except IntegrityError:
             return error_response(404)
 
 
 class DepartmentApi(Resource):
+    """Contains GET (by id), PUT and DELETE request handlers for department table.
+
+    Given class groups handlers which require item's id to
+    perform a database request.
+    """
+
     def get(self, id):
+        """Gets a department from the database by the id.
+
+        Returns:
+            Retreived department using data_response or
+            error object using error_response.
+        """
+
         try:
             department = Operator.get_by_id(Department, id)
             return data_response(department.json())
@@ -34,6 +63,13 @@ class DepartmentApi(Resource):
             return error_response(404)
 
     def put(self, id):
+        """Updates a department from the database by the id.
+
+        Returns:
+            Retreived department using data_response or
+            error object using error_response.
+        """
+
         parser.add_argument('id', type=int)
         parser.add_argument('name', type=str)
         try:
