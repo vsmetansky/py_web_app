@@ -1,4 +1,4 @@
-"""Provides user with setup configuration."""
+"""Provides user with the setup configuration."""
 
 from setuptools import setup, find_packages
 

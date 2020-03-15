@@ -1,3 +1,10 @@
+"""Contains resources for performing CRUD operations on employee table.
+
+Exported classes:
+    EmployeesApi: a resource, containing GET and POST request handlers.
+    EmployeeApi: a resource, containing GET, PUT and DELETE request handlers.
+"""
+
 from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError
@@ -19,17 +26,31 @@ def add_employee_args():
 
 
 class EmployeesApi(Resource):
+    """Contains GET and POST request handlers for employee table.
+
+    Given class groups handlers which do not require item's id to
+    perform a database request.
+    """
+
     def get(self):
+        """Returns all the employees from the db using data_response."""
+
         employees = Operator.get_all(Employee)
         return data_response(Employee.json_list(employees))
 
     def post(self):
+        """Adds an employee to the database.
+
+        Returns:
+            Employee's id using data_response or
+            error object using error_response.
+        """
+
         add_employee_args()
         try:
             raw_data = parser.parse_args()
             employee = self.__employee_from_raw(raw_data)
-            Operator.insert(employee)
-            return data_response(employee.json())
+            return data_response(Operator.insert(employee))
         except IntegrityError:
             return error_response(400)
 
@@ -43,7 +64,20 @@ class EmployeesApi(Resource):
 
 
 class EmployeeApi(Resource):
+    """Contains GET (by id), PUT and DELETE request handlers for employee table.
+
+    Given class groups handlers which require item's id to
+    perform a database request.
+    """
+
     def get(self, id):
+        """Gets an employee from the database by the id.
+
+        Returns:
+            Retreived employee using data_response or
+            error object using error_response.
+        """
+
         try:
             employee = Operator.get_by_id(Employee, id)
             return data_response(employee.json())
@@ -51,6 +85,14 @@ class EmployeeApi(Resource):
             return error_response(404)
 
     def put(self, id):
+        """Updates an employee from the database by the id.
+
+        Returns:
+            True (if the operation was successful) 
+            or False using data_response or
+            error object using error_response.
+        """
+
         parser.add_argument('id', type=int)
         add_employee_args()
         try:
@@ -60,6 +102,13 @@ class EmployeeApi(Resource):
             return error_response(404)
 
     def delete(self, id):
+        """Deletes an employee from the database by the id.
+
+        Returns:
+            All the employees from the db using data_response or
+            error object using error_response.
+        """
+
         try:
             Operator.remove(Employee, id)
             return data_response(Employee.json_list(Operator.get_all(Employee)))

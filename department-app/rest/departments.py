@@ -1,4 +1,9 @@
-"""Contains REST endpoints for performing CRUD operations on department table."""
+"""Contains resources for performing CRUD operations on department table.
+
+Exported classes:
+    DepartmentsApi: a resource, containing GET and POST request handlers.
+    DepartmentApi: a resource, containing GET, PUT and DELETE request handlers.
+"""
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -66,7 +71,8 @@ class DepartmentApi(Resource):
         """Updates a department from the database by the id.
 
         Returns:
-            Retreived department using data_response or
+            True (if the operation was successful) 
+            or False using data_response or
             error object using error_response.
         """
 
@@ -79,6 +85,13 @@ class DepartmentApi(Resource):
             return error_response(400)
 
     def delete(self, id):
+        """Deletes a department from the database by the id.
+
+        Returns:
+            All the departments from the db using data_response or
+            error object using error_response.
+        """
+
         try:
             Operator.remove(Department, id)
             return data_response(Department.json_list(Operator.get_all(Department)))

@@ -1,4 +1,3 @@
-"""Application's main module. Runs Flask server."""
 from flask import Flask
 
 from models import department, employee

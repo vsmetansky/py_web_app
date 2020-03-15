@@ -1,7 +1,8 @@
-"""Provides rest package with utility modules.
+"""Provides resources with response functions and messages.
 
-Exported modules:
-    jsonresponse.py: Provides rest endpoints with response functions and messages.
+Exported functions:
+    data_response: Generates a json response object.
+    error_response: Generates an error json response object.
 """
 
 
