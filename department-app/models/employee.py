@@ -14,6 +14,7 @@ from faker.providers import date_time
 from extensions import db
 from models.utility.jsonserializer import JsonSerializer
 from models.utility.randomizer import Randomizer
+from models.department import Department
 from service.operator import Operator
 
 MIN_SALARY = 500
@@ -35,7 +36,7 @@ class Employee(db.Model, JsonSerializer, Randomizer):
 
     id = db.Column(db.Integer, primary_key=True)
     department_id = db.Column(db.Integer, db.ForeignKey(
-        'department.id'), nullable=False)
+        'department.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     birthdate = db.Column(db.Date)
     salary = db.Column(db.Integer, nullable=False)
@@ -55,7 +56,7 @@ class Employee(db.Model, JsonSerializer, Randomizer):
             birthdate=fake.date_between(start_date='-50y', end_date='-18y'),
             salary=fake.random_int(MIN_SALARY, MAX_SALARY, step=1),
             department_id=fake.random_element(elements=tuple(
-                e.id for e in Operator.get_all(Employee)))
+                d.id for d in Operator.get_all(Department)))
         )
 
     def __repr__(self):

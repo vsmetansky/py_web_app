@@ -32,14 +32,11 @@ class Operator:
 
     @classmethod
     def insert(cls, value):
-        """Inserts given row into the database.
-
-        Returns:
-            An integer, representing row's id.
-        """
+        """Inserts given row into the database."""
 
         db.session.add(value)
         db.session.commit()
+
         return value.id
 
     @classmethod
@@ -59,8 +56,8 @@ class Operator:
         """
 
         old_value = model.query.get(upd_data.get('id'))
-        if old_value.get('id'):
-            model.query.filter_by(id=old_value['id']).update(upd_data)
+        if old_value:
+            model.query.filter_by(id=old_value.id).update(upd_data)
             db.session.commit()
             return True
         return False

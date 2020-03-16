@@ -50,7 +50,8 @@ class EmployeesApi(Resource):
         try:
             raw_data = parser.parse_args()
             employee = self.__employee_from_raw(raw_data)
-            return data_response(Operator.insert(employee))
+            Operator.insert(employee)
+            return data_response(employee.id)
         except IntegrityError:
             return error_response(400)
 

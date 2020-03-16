@@ -41,7 +41,8 @@ class DepartmentsApi(Resource):
         try:
             raw_data = parser.parse_args()
             department = Department(name=raw_data['name'])
-            return data_response(Operator.insert(department))
+            Operator.insert(department)
+            return data_response(department.id)
         except IntegrityError:
             return error_response(404)
 
