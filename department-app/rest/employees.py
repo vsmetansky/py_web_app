@@ -94,10 +94,10 @@ class EmployeeApi(Resource):
             error object using error_response.
         """
 
-        parser.add_argument('id', type=int)
         add_employee_args()
         try:
             raw_data = parser.parse_args()
+            raw_data['id'] = id
             return data_response(Operator.update(Employee, raw_data))
         except IntegrityError:
             return error_response(404)

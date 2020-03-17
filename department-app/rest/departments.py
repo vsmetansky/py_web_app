@@ -77,10 +77,10 @@ class DepartmentApi(Resource):
             error object using error_response.
         """
 
-        parser.add_argument('id', type=int)
         parser.add_argument('name', type=str)
         try:
             raw_data = parser.parse_args()
+            raw_data['id'] = id
             return data_response(Operator.update(Department, raw_data))
         except IntegrityError:
             return error_response(400)

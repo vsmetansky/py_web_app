@@ -1,3 +1,5 @@
+"""Contains tests for the 'operator' module."""
+
 import unittest
 import random
 
@@ -6,25 +8,18 @@ from extensions import db
 from service.operator import Operator
 from models.department import Department
 from models.employee import Employee
+from tests.utility.db_setup import db_init, db_delete
 
 MAX_ENTITY_NUM = 10
 
 
-def db_init(db, models, entity_num):
-    db.create_all()
-    for m in models:
-        db.session.add_all(
-            m.random() for _ in range(entity_num)
-        )
-        db.session.commit()
-
-
-def db_delete(db):
-    db.session.commit()
-    db.drop_all()
-
-
 class DepartmentsTest(unittest.TestCase):
+    """A test case for an 'operator' module on 'department' table.
+
+    Attributes:
+        ctx: An application context.
+    """
+
     @classmethod
     def setUpClass(cls):
         cls.app = create_test_app()
@@ -73,6 +68,12 @@ class DepartmentsTest(unittest.TestCase):
 
 
 class EmployeesTest(unittest.TestCase):
+    """A test case for an 'operator' module on 'employee' table.
+
+    Attributes:
+        ctx: An application context.
+    """
+
     @classmethod
     def setUpClass(cls):
         cls.app = create_test_app()

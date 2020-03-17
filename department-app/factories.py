@@ -54,6 +54,7 @@ def create_test_app(api_used=False):
     db.init_app(app)
 
     if api_used:
+        api.resources.clear()
         add_resources(api)
         api.init_app(app)
 
