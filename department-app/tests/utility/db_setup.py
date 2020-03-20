@@ -11,9 +11,7 @@ def db_init(db, models, entity_num):
 
     db.create_all()
     for m in models:
-        db.session.add_all(
-            m.random() for _ in range(entity_num)
-        )
+        db.session.add_all(m.random_many(entity_num))
         db.session.commit()
 
 

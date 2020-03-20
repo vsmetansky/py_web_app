@@ -11,7 +11,7 @@ Exported constants:
 from faker import Faker
 from faker.providers import date_time
 
-from extensions import db
+from extensions import DB
 from models.utility.jsonserializer import JsonSerializer
 from models.utility.randomizer import Randomizer
 from models.department import Department
@@ -21,7 +21,7 @@ MIN_SALARY = 500
 MAX_SALARY = 10000
 
 
-class Employee(db.Model, JsonSerializer, Randomizer):
+class Employee(DB.Model, JsonSerializer, Randomizer):
     """ORM representation for 'employee' table in the database.
 
     This class is, basically, a relation schema for 'employee'
@@ -34,12 +34,12 @@ class Employee(db.Model, JsonSerializer, Randomizer):
         department_id: An integer id of the department where employee works.
     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    department_id = db.Column(db.Integer, db.ForeignKey(
+    id = DB.Column(DB.Integer, primary_key=True)
+    department_id = DB.Column(DB.Integer, DB.ForeignKey(
         'department.id', ondelete='CASCADE'), nullable=False)
-    name = db.Column(db.String(50), nullable=False)
-    birthdate = db.Column(db.Date)
-    salary = db.Column(db.Integer, nullable=False)
+    name = DB.Column(DB.String(50), nullable=False)
+    birthdate = DB.Column(DB.Date)
+    salary = DB.Column(DB.Integer, nullable=False)
 
     @classmethod
     def random(cls):

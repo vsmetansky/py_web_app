@@ -15,16 +15,19 @@ from models.employee import Employee
 from service.operator import Operator
 from rest.utility.jsonresponse import data_response, error_response
 
-parser = reqparse.RequestParser()
+PARSER = reqparse.RequestParser()
 
 
 def add_employee_args():
-    parser.add_argument('name', type=str)
-    parser.add_argument('salary', type=int)
-    parser.add_argument('birthdate', type=str)
-    parser.add_argument('department_id', type=int)
+    """Adds arguments to the parser"""
+
+    PARSER.add_argument('name', type=str)
+    PARSER.add_argument('salary', type=int)
+    PARSER.add_argument('birthdate', type=str)
+    PARSER.add_argument('department_id', type=int)
 
 
+# pylint: disable=R0201
 class EmployeesApi(Resource):
     """Contains GET and POST request handlers for employee table.
 
@@ -48,7 +51,7 @@ class EmployeesApi(Resource):
 
         add_employee_args()
         try:
-            raw_data = parser.parse_args()
+            raw_data = PARSER.parse_args()
             employee = self.__employee_from_raw(raw_data)
             Operator.insert(employee)
             return data_response(employee.id)
@@ -71,7 +74,7 @@ class EmployeeApi(Resource):
     perform a database request.
     """
 
-    def get(self, id):
+    def get(self, id_):
         """Gets an employee from the database by the id.
 
         Returns:
@@ -80,29 +83,29 @@ class EmployeeApi(Resource):
         """
 
         try:
-            employee = Operator.get_by_id(Employee, id)
+            employee = Operator.get_by_id(Employee, id_)
             return data_response(employee.json())
         except AttributeError:
             return error_response(404)
 
-    def put(self, id):
+    def put(self, id_):
         """Updates an employee from the database by the id.
 
         Returns:
-            True (if the operation was successful) 
+            True (if the operation was successful)
             or False using data_response or
             error object using error_response.
         """
 
         add_employee_args()
         try:
-            raw_data = parser.parse_args()
-            raw_data['id'] = id
+            raw_data = PARSER.parse_args()
+            raw_data['id'] = id_
             return data_response(Operator.update(Employee, raw_data))
         except IntegrityError:
             return error_response(404)
 
-    def delete(self, id):
+    def delete(self, id_):
         """Deletes an employee from the database by the id.
 
         Returns:
@@ -111,7 +114,7 @@ class EmployeeApi(Resource):
         """
 
         try:
-            Operator.remove(Employee, id)
+            Operator.remove(Employee, id_)
             return data_response(Employee.json_list(Operator.get_all(Employee)))
         except UnmappedInstanceError:
             return error_response(404)

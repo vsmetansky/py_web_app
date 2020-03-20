@@ -3,12 +3,12 @@
 import unittest
 import random
 
+from tests.utility.db_setup import db_init, db_delete
 from factories import create_test_app
-from extensions import db
+from extensions import DB
 from service.operator import Operator
 from models.department import Department
 from models.employee import Employee
-from tests.utility.db_setup import db_init, db_delete
 
 MAX_ENTITY_NUM = 10
 
@@ -27,10 +27,10 @@ class DepartmentsTest(unittest.TestCase):
     def setUp(self):
         self.ctx = DepartmentsTest.app.app_context()
         self.ctx.push()
-        db_init(db, (Department, Employee), MAX_ENTITY_NUM)
+        db_init(DB, (Department, Employee), MAX_ENTITY_NUM)
 
     def tearDown(self):
-        db_delete(db)
+        db_delete(DB)
         self.ctx.pop()
 
     def test_get(self):
@@ -81,10 +81,10 @@ class EmployeesTest(unittest.TestCase):
     def setUp(self):
         self.ctx = EmployeesTest.app.app_context()
         self.ctx.push()
-        db_init(db, (Department, Employee), MAX_ENTITY_NUM)
+        db_init(DB, (Department, Employee), MAX_ENTITY_NUM)
 
     def tearDown(self):
-        db_delete(db)
+        db_delete(DB)
         self.ctx.pop()
 
     def test_get(self):

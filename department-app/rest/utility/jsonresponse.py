@@ -25,7 +25,7 @@ def data_response(value):
 def error_response(code):
     """Generates an error json response object.
 
-    An error code is provided by user and the 
+    An error code is provided by user and the
     error message is extracted from ERROR_MESSAGES
     dictionary.
 

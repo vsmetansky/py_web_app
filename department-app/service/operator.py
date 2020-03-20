@@ -4,7 +4,7 @@ Exported classes:
     Operator: contains methods to perform CRUD operations.
 """
 
-from extensions import db
+from extensions import DB
 
 
 class Operator:
@@ -21,30 +21,30 @@ class Operator:
         return model.query.all()
 
     @classmethod
-    def get_by_id(cls, model, id):
+    def get_by_id(cls, model, id_):
         """Gets one row of given model by the provided id from the database.
 
         Returns:
             A fetched row in the form of object.
         """
 
-        return model.query.get(id)
+        return model.query.get(id_)
 
     @classmethod
     def insert(cls, value):
         """Inserts given row into the database."""
 
-        db.session.add(value)
-        db.session.commit()
+        DB.session.add(value)
+        DB.session.commit()
 
         return value.id
 
     @classmethod
-    def remove(cls, model, id):
+    def remove(cls, model, id_):
         """Removes a row from the database by the id."""
 
-        model.query.filter_by(id=id).delete()
-        db.session.commit()
+        model.query.filter_by(id=id_).delete()
+        DB.session.commit()
 
     @classmethod
     def update(cls, model, upd_data):
@@ -58,6 +58,6 @@ class Operator:
         old_value = model.query.get(upd_data.get('id'))
         if old_value:
             model.query.filter_by(id=old_value.id).update(upd_data)
-            db.session.commit()
+            DB.session.commit()
             return True
         return False

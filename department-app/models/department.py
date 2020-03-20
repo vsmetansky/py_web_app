@@ -6,12 +6,12 @@ Exported classes:
 
 from faker import Faker
 
-from extensions import db
+from extensions import DB
 from models.utility.jsonserializer import JsonSerializer
 from models.utility.randomizer import Randomizer
 
 
-class Department(db.Model, JsonSerializer, Randomizer):
+class Department(DB.Model, JsonSerializer, Randomizer):
     """ORM representation for 'department' table in the database.
 
     This class is, basically, a relation schema for 'department'
@@ -21,8 +21,8 @@ class Department(db.Model, JsonSerializer, Randomizer):
         name: A string corresponding to department's name.
     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    id = DB.Column(DB.Integer, primary_key=True)
+    name = DB.Column(DB.String(50), nullable=False)
 
     @classmethod
     def random(cls):

@@ -18,3 +18,13 @@ class Randomizer():
     @abstractmethod
     def random(cls):
         """An abstract class method for random instance generation"""
+
+    @classmethod
+    def random_many(cls, entity_num):
+        """A class method to generate tuples of random instances.
+
+        Returns:
+            A tuple of random class instances.
+        """
+
+        return tuple(cls.random() for _ in range(entity_num))

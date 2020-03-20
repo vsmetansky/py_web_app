@@ -9,16 +9,16 @@ from flask import Flask
 
 from rest.departments import DepartmentApi, DepartmentsApi
 from rest.employees import EmployeeApi, EmployeesApi
-from extensions import api, db, migrate
+from extensions import API, DB, MIGRATE
 
 
-def add_resources(interface):
+def add_resources(api):
     """Adds resources to REST application programming interface."""
 
-    interface.add_resource(DepartmentsApi, '/departments')
-    interface.add_resource(DepartmentApi, '/departments/<int:id>')
-    interface.add_resource(EmployeesApi, '/employees')
-    interface.add_resource(EmployeeApi, '/employees/<int:id>')
+    api.add_resource(DepartmentsApi, '/departments')
+    api.add_resource(DepartmentApi, '/departments/<int:id>')
+    api.add_resource(EmployeesApi, '/employees')
+    api.add_resource(EmployeeApi, '/employees/<int:id>')
 
 
 def create_app():
@@ -32,11 +32,11 @@ def create_app():
     app = Flask(__name__)
     app.config.from_envvar('APP_CONFIG')
 
-    add_resources(api)
+    add_resources(API)
 
-    db.init_app(app)
-    migrate.init_app(app, db)
-    api.init_app(app)
+    DB.init_app(app)
+    MIGRATE.init_app(app, DB)
+    API.init_app(app)
 
     return app
 
@@ -52,11 +52,11 @@ def create_test_app(api_used=False):
     app = Flask(__name__)
     app.config.from_envvar('TEST_CONFIG')
 
-    db.init_app(app)
+    DB.init_app(app)
 
     if api_used:
-        api.resources.clear()
-        add_resources(api)
-        api.init_app(app)
+        API.resources.clear()
+        add_resources(API)
+        API.init_app(app)
 
     return app

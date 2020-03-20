@@ -4,11 +4,11 @@
 import unittest
 import random
 
-from extensions import db
+from tests.utility.db_setup import db_init, db_delete
+from extensions import DB
 from factories import create_test_app
 from models.department import Department
 from models.employee import Employee
-from tests.utility.db_setup import db_init, db_delete
 
 MAX_ENTITY_NUM = 10
 
@@ -29,10 +29,10 @@ class DepartmentsApiTest(unittest.TestCase):
         self.ctx = DepartmentsApiTest.app.app_context()
         self.client = DepartmentsApiTest.app.test_client()
         self.ctx.push()
-        db_init(db, (Department,), MAX_ENTITY_NUM)
+        db_init(DB, (Department,), MAX_ENTITY_NUM)
 
     def tearDown(self):
-        db_delete(db)
+        db_delete(DB)
         self.ctx.pop()
 
     def test_get(self):
@@ -97,10 +97,10 @@ class EmployeesApiTest(unittest.TestCase):
         self.ctx = EmployeesApiTest.app.app_context()
         self.client = EmployeesApiTest.app.test_client()
         self.ctx.push()
-        db_init(db, (Department, Employee), MAX_ENTITY_NUM)
+        db_init(DB, (Department, Employee), MAX_ENTITY_NUM)
 
     def tearDown(self):
-        db_delete(db)
+        db_delete(DB)
         self.ctx.pop()
 
     def test_get(self):
