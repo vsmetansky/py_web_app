@@ -21,6 +21,9 @@ mccabe==0.6.1
 pycodestyle==2.5.0
 pycparser==2.20
 pylint==2.4.4
+pylint-flask==0.6
+pylint-flask-sqlalchemy==0.2.0
+pylint-plugin-utils==0.6
 PyMySQL==0.9.3
 python-dateutil==2.8.1
 python-editor==1.0.4

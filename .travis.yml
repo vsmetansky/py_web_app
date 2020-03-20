@@ -11,6 +11,5 @@ install:
   - pip install coveralls 
 script:
   - pylint --rcfile=.pylintrc department-app
-  - bash scripts/test_start.sh
 after_success: 
   - coveralls
