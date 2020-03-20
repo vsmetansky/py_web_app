@@ -7,17 +7,18 @@ Exported functions:
 
 from flask import Flask
 
-from models import department, employee
 from rest.departments import DepartmentApi, DepartmentsApi
 from rest.employees import EmployeeApi, EmployeesApi
 from extensions import api, db, migrate
 
 
-def add_resources(api):
-    api.add_resource(DepartmentsApi, '/departments')
-    api.add_resource(DepartmentApi, '/departments/<int:id>')
-    api.add_resource(EmployeesApi, '/employees')
-    api.add_resource(EmployeeApi, '/employees/<int:id>')
+def add_resources(interface):
+    """Adds resources to REST application programming interface."""
+
+    interface.add_resource(DepartmentsApi, '/departments')
+    interface.add_resource(DepartmentApi, '/departments/<int:id>')
+    interface.add_resource(EmployeesApi, '/employees')
+    interface.add_resource(EmployeeApi, '/employees/<int:id>')
 
 
 def create_app():

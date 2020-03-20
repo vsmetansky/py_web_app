@@ -10,6 +10,6 @@ install:
   - pip install pylint-flask-sqlalchemy
   - pip install coveralls 
 script:
-  - pylint --output-format=text --load-plugins pylint_flask_sqlalchemy department-app
+  - pylint --output-format=text --ignore=migrations --load-plugins pylint_flask_sqlalchemy department-app
 after_success: 
   - coveralls
