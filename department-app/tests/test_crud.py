@@ -111,7 +111,7 @@ class EmployeesTest(unittest.TestCase):
         test_entity_ref_id = Operator.get_by_id(
             Employee, test_entity_id).department_id
         Operator.remove(Employee, test_entity_id)
-        self.assertIsNotNone(Operator.get_by_id(Employee, test_entity_ref_id))
+        self.assertIsNotNone(Operator.get_by_id(Department, test_entity_ref_id))
 
     def test_update(self):
         test_entity_new = Employee.random()

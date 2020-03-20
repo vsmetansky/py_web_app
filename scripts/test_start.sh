@@ -6,4 +6,4 @@ if [[ "$VIRTUAL_ENV" == "" ]]; then
 fi
 export TEST_CONFIG="./config/test.conf"
 python -m unittest discover tests
-bash ../scripts/del_cache.sh > /dev/null
+bash ../scripts/del_cache.sh
