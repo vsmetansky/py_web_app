@@ -16,9 +16,9 @@ def add_resources(api):
     """Adds resources to REST application programming interface."""
 
     api.add_resource(DepartmentsApi, '/departments')
-    api.add_resource(DepartmentApi, '/departments/<int:id>')
+    api.add_resource(DepartmentApi, '/departments/<int:id_>')
     api.add_resource(EmployeesApi, '/employees')
-    api.add_resource(EmployeeApi, '/employees/<int:id>')
+    api.add_resource(EmployeeApi, '/employees/<int:id_>')
 
 
 def create_app():
