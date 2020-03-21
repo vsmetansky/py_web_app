@@ -9,7 +9,7 @@ services:
 install:
   - pip install -r requirements.txt
   - pip install coveralls
-before_script:
+before_install:
   - mysql -e "CREATE DATABASE deps_emps_db_test;"
 script:
   - pylint --rcfile=.pylintrc department-app
