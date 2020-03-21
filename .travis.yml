@@ -1,14 +1,17 @@
-language: 
-  - python
+language:
+  - "python"
 python:
   - "3.6"
   - "3.7"
-  - "3.8"
+services:
+  - mysql
 install:
-  - python department-app/setup.py install
-  - pip install pylint
-  - pip install coveralls 
+  - pip install -r requirements.txt
+  - pip install coveralls
+before_install:
+  - mysql -e "CREATE DATABASE deps_emps_db_test;"
 script:
-  - pylint --output-format=text department-app
-after_success: 
+  - pylint --rcfile=.pylintrc department-app
+  - bash scripts/test_start_travis.sh
+after_success:
   - coveralls

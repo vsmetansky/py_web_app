@@ -1,23 +1,40 @@
 """Provides user with Department class.
 
 Exported classes:
-1. Department (ORM representation for 'department' table in a database).
+    Department: ORM representation for 'department' table in the database.
 """
 
-from flask import g
+from faker import Faker
+
+from extensions import DB
+from models.utility.jsonserializer import JsonSerializer
+from models.utility.randomizer import Randomizer
 
 
-DB = g.db
+class Department(DB.Model, JsonSerializer, Randomizer):
+    """ORM representation for 'department' table in the database.
 
+    This class is, basically, a relation schema for 'department'
+    table. An instance of the class represents a row in the table.
 
-class Department(DB.Model):
-    """ORM representation for 'department' table in a database."""
+    Attributes:
+        name: A string corresponding to department's name.
+    """
 
     id = DB.Column(DB.Integer, primary_key=True)
-    name = DB.Column(DB.String(50))
+    name = DB.Column(DB.String(50), nullable=False)
+
+    @classmethod
+    def random(cls):
+        """Generates a random instance of the class.
+
+        Returns:
+            An instance of the class with randomly generated
+            attributes.
+        """
+        return Department(
+            name=Faker().name()
+        )
 
     def __repr__(self):
         return f'<Department {self.name}>'
-
-    def __str__(self):
-        return str(self.__dict___)
