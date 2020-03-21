@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd department-app
+cd ..
 if [["$VIRTUAL_ENV" == ""]]; then
     source venv/bin/activate
 fi
