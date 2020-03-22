@@ -3,7 +3,7 @@
 import multiprocessing
 import os
 
-bind = 'localhost:8000'
+bind = os.environ['API_BASE_URL']
 backlog = 2048
 
 workers = multiprocessing.cpu_count() * 2 + 1
@@ -29,7 +29,7 @@ logconfig_dict = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.environ['LOG_DIR'],
+            'filename': os.environ['API_LOG_DIR'],
             'formatter': 'generic'
         }
     }

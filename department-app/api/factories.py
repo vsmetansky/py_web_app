@@ -30,7 +30,7 @@ def create_app():
     """
 
     app = Flask(__name__)
-    app.config.from_envvar('APP_CONFIG')
+    app.config.from_envvar('API_CONFIG')
 
     add_resources(API)
 
@@ -50,7 +50,7 @@ def create_test_app(api_used=False):
     """
 
     app = Flask(__name__)
-    app.config.from_envvar('TEST_CONFIG')
+    app.config.from_envvar('API_TEST_CONFIG')
 
     DB.init_app(app)
 

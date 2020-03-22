@@ -7,6 +7,13 @@ Exported functions:
 
 from flask import Flask
 
+from views.departments import Departments
+
+
+def register_routes(app):
+    app.add_url_rule('/departments',
+                     view_func=Departments.as_view('departments'))
+
 
 def create_app():
     """Creates and configures a Flask app for production.
@@ -16,7 +23,9 @@ def create_app():
     """
 
     app = Flask(__name__)
-    app.config.from_envvar('APP_CONFIG')
+    app.config.from_envvar('CLIENT_CONFIG')
+
+    register_routes(app)
 
     return app
 
