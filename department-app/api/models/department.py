@@ -18,7 +18,9 @@ class Department(DB.Model, JsonSerializer, Randomizer):
     table. An instance of the class represents a row in the table.
 
     Attributes:
+        id: A unique identifier for given entity in DB.
         name: A string corresponding to department's name.
+        employees: A list of employees who are working in given department.
     """
 
     id = DB.Column(DB.Integer, primary_key=True)
