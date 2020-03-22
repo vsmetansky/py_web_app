@@ -6,12 +6,12 @@ python:
 services:
   - mysql
 install:
-  - pip install -r requirements.txt
+  - pip install -r department-app/api/requirements.txt
   - pip install coveralls
 before_install:
   - mysql -e "CREATE DATABASE deps_emps_db_test;"
 script:
-  - pylint --rcfile=.pylintrc department-app
-  - bash scripts/test_start_travis.sh
+  - pylint --rcfile=.pylintrc department-app/api
+  - bash department-app/api/scripts/test_start_travis.sh
 after_success:
   - coveralls

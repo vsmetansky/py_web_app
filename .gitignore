@@ -2,3 +2,4 @@
 **/__pycache__
 **/del_cache.sh
 **/logs
+**/.vscode
