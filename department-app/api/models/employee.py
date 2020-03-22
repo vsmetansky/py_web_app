@@ -28,6 +28,7 @@ class Employee(DB.Model, JsonSerializer, Randomizer):
     table. An instance of the class represents a row in the table.
 
     Attributes:
+        id: A unique identifier for given entity in DB.
         name: A string corresponding to employee's name.
         birthdate: A date object representing employee's birthdate.
         salary: An integer representing employee's salary.

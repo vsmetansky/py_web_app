@@ -6,6 +6,8 @@ Exported classes:
 
 from datetime import date
 
+from collections import Iterable
+
 from sqlalchemy.inspection import inspect
 
 
@@ -16,6 +18,8 @@ class JsonSerializer:
         val = getattr(self, key)
         if isinstance(val, date):
             return str(val)
+        elif isinstance(val, Iterable):
+            return JsonSerializer.json_list(val)
         return val
 
     def json(self):
