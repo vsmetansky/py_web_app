@@ -7,11 +7,12 @@ Exported classes:
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, marshal_with
 
 from models.department import Department
 from service.operator import Operator
-from rest.utility.jsonresponse import data_response, error_response
+from rest.utility.jsonresponse import error_response
+from models.utility.fields import DEPARTMENT_FIELDS
 
 PARSER = reqparse.RequestParser()
 
@@ -24,12 +25,13 @@ class DepartmentsApi(Resource):
     perform a database request.
     """
 
+    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def get(self):
         """Returns all the departments from the db using data_response."""
 
-        departments = Operator.get_all(Department)
-        return data_response(Department.json_list(departments))
+        return Operator.get_all(Department)
 
+    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def post(self):
         """Adds a department to the database.
 
@@ -42,8 +44,7 @@ class DepartmentsApi(Resource):
         try:
             raw_data = PARSER.parse_args()
             department = Department(name=raw_data['name'])
-            Operator.insert(department)
-            return data_response(department.id)
+            return Operator.insert(department)
         except IntegrityError:
             return error_response(404)
 
@@ -55,6 +56,7 @@ class DepartmentApi(Resource):
     perform a database request.
     """
 
+    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def get(self, id_):
         """Gets a department from the database by the id.
 
@@ -64,11 +66,11 @@ class DepartmentApi(Resource):
         """
 
         try:
-            department = Operator.get_by_id(Department, id_)
-            return data_response(department.json())
+            return Operator.get_by_id(Department, id_)
         except AttributeError:
             return error_response(404)
 
+    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def put(self, id_):
         """Updates a department from the database by the id.
 
@@ -82,10 +84,11 @@ class DepartmentApi(Resource):
         try:
             raw_data = PARSER.parse_args()
             raw_data['id'] = id_
-            return data_response(Operator.update(Department, raw_data))
+            return Operator.update(Department, raw_data)
         except IntegrityError:
             return error_response(400)
 
+    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def delete(self, id_):
         """Deletes a department from the database by the id.
 
@@ -96,6 +99,6 @@ class DepartmentApi(Resource):
 
         try:
             Operator.remove(Department, id_)
-            return data_response(Department.json_list(Operator.get_all(Department)))
+            return Operator.get_all(Department)
         except UnmappedInstanceError:
             return error_response(404)

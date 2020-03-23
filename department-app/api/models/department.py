@@ -7,11 +7,10 @@ Exported classes:
 from faker import Faker
 
 from extensions import DB
-from models.utility.jsonserializer import JsonSerializer
 from models.utility.randomizer import Randomizer
 
 
-class Department(DB.Model, JsonSerializer, Randomizer):
+class Department(DB.Model, Randomizer):
     """ORM representation for 'department' table in the database.
 
     This class is, basically, a relation schema for 'department'

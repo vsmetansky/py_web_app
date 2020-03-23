@@ -3,12 +3,15 @@
 import unittest
 import random
 
+from flask_restful import marshal
+
 from tests.utility.db_setup import db_init, db_delete
 from factories import create_test_app
 from extensions import DB
 from service.operator import Operator
 from models.department import Department
 from models.employee import Employee
+from models.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
 
 MAX_ENTITY_NUM = 10
 
@@ -62,9 +65,10 @@ class DepartmentsTest(unittest.TestCase):
     def test_update(self):
         test_entity_new = Department.random()
         test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-        Operator.update(Department, test_entity_new.json())
-        self.assertEqual(test_entity_new.json(),
-                         Operator.get_by_id(Department, test_entity_new.id).json())
+        Operator.update(Department, marshal(
+            test_entity_new, DEPARTMENT_FIELDS))
+        self.assertEqual(marshal(test_entity_new, DEPARTMENT_FIELDS),
+                         marshal(Operator.get_by_id(Department, test_entity_new.id), DEPARTMENT_FIELDS))
 
 
 class EmployeesTest(unittest.TestCase):
@@ -111,11 +115,12 @@ class EmployeesTest(unittest.TestCase):
         test_entity_ref_id = Operator.get_by_id(
             Employee, test_entity_id).department_id
         Operator.remove(Employee, test_entity_id)
-        self.assertIsNotNone(Operator.get_by_id(Department, test_entity_ref_id))
+        self.assertIsNotNone(Operator.get_by_id(
+            Department, test_entity_ref_id))
 
     def test_update(self):
         test_entity_new = Employee.random()
         test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-        Operator.update(Employee, test_entity_new.json())
-        self.assertEqual(test_entity_new.json(),
-                         Operator.get_by_id(Employee, test_entity_new.id).json())
+        Operator.update(Employee, marshal(test_entity_new, EMPLOYEE_FIELDS))
+        self.assertEqual(marshal(test_entity_new, EMPLOYEE_FIELDS),
+                         marshal(Operator.get_by_id(Employee, test_entity_new.id), EMPLOYEE_FIELDS))

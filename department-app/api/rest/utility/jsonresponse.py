@@ -12,16 +12,6 @@ ERROR_MESSAGES = {
 }
 
 
-def data_response(value):
-    """Generates a json response object.
-
-    Returns:
-        A json serializable python dict
-        with 'data' key.
-    """
-    return {'data': value}
-
-
 def error_response(code):
     """Generates an error json response object.
 

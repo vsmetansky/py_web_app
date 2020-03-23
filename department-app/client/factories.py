@@ -11,8 +11,11 @@ from views.departments import Departments
 
 
 def register_routes(app):
-    app.add_url_rule('/departments',
-                     view_func=Departments.as_view('departments'))
+    deps_view = Departments.as_view('departments')
+    app.add_url_rule('/departments/', methods=('GET',),
+                     view_func=deps_view)
+    app.add_url_rule('/departments/<int:id_>',
+                     view_func=deps_view)
 
 
 def create_app():

@@ -4,11 +4,15 @@
 import unittest
 import random
 
+from flask_restful import marshal
+
 from tests.utility.db_setup import db_init, db_delete
 from extensions import DB
 from factories import create_test_app
 from models.department import Department
 from models.employee import Employee
+from models.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
+
 
 MAX_ENTITY_NUM = 10
 
@@ -51,14 +55,14 @@ class DepartmentsApiTest(unittest.TestCase):
     def test_insert(self):
         test_entity = Department.random()
         post_response = self.client.post(
-            '/departments', data=test_entity.json())
+            '/departments', data=marshal(test_entity, DEPARTMENT_FIELDS))
 
         test_entity_id = post_response.get_json().get('data')
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/departments/{test_entity.id}')
-        self.assertEqual(test_entity.json(),
+        self.assertEqual(marshal(test_entity, DEPARTMENT_FIELDS),
                          get_response.get_json().get('data'))
 
     def test_delete(self):
@@ -69,7 +73,7 @@ class DepartmentsApiTest(unittest.TestCase):
         self.assertIsNone(get_response.get_json().get('data'))
 
     def test_update(self):
-        test_entity_new = Department.random().json()
+        test_entity_new = marshal(Department.random(), DEPARTMENT_FIELDS)
 
         test_entity_new_id = random.randint(1, MAX_ENTITY_NUM)
         self.client.put(
@@ -119,14 +123,14 @@ class EmployeesApiTest(unittest.TestCase):
     def test_insert(self):
         test_entity = Employee.random()
         post_response = self.client.post(
-            '/employees', data=test_entity.json())
+            '/employees', data=marshal(test_entity, EMPLOYEE_FIELDS))
 
         test_entity_id = post_response.get_json().get('data')
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/employees/{test_entity.id}')
-        self.assertEqual(test_entity.json(),
+        self.assertEqual(marshal(test_entity, EMPLOYEE_FIELDS),
                          get_response.get_json().get('data'))
 
     def test_delete(self):
@@ -137,7 +141,7 @@ class EmployeesApiTest(unittest.TestCase):
         self.assertIsNone(get_response.get_json().get('data'))
 
     def test_update(self):
-        test_entity_new = Employee.random().json()
+        test_entity_new = marshal(Employee.random(), EMPLOYEE_FIELDS)
 
         test_entity_new_id = random.randint(1, MAX_ENTITY_NUM)
         self.client.put(
