@@ -21,6 +21,33 @@ a:hover {
     color: rgb(32, 32, 32)
 }
 
+input {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+
+#search-field {
+    border: none;
+    width: 30vw;
+}
+
+#search-field:focus {
+    outline: none;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 4vh;
+    padding-bottom: 4vh;
+}
+
 .nav-list {
     display: flex;
     align-items: center;

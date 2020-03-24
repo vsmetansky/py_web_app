@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ data.name }}{% endblock %}
+{% block content %}
+{% for employee in data.employees%}
+<div class="card-sm">
+    <div class="card-header">
+        <button class="upd-button" onclick="">Update</button>
+        <h1 class="card-sm-name">{{ employee.name }}</h1>
+        <button class="del-button" onclick="">Delete</button>
+    </div>
+    <div class="card-footer">
+        <p class="card-info left">Born: {{ employee.birthdate }}</p>
+        <p class="card-info right">Salary: ${{ employee.salary }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

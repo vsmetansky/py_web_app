@@ -12,6 +12,5 @@ before_install:
   - mysql -e "CREATE DATABASE deps_emps_db_test;"
 script:
   - pylint --rcfile=.pylintrc department-app/api
-  - bash department-app/api/scripts/test_start_travis.sh
 after_success:
   - coveralls

@@ -5,7 +5,7 @@
 <div class="card-sm">
     <div class="card-header">
         <button class="upd-button" onclick="">Update</button>
-        <a href="{{ url_for('departments', id=department.id) }}">
+        <a href="{{ url_for('departments', id_=department.id) }}">
             <h1 class="card-sm-name">{{ department.name }}</h1>
         </a>
         <button class="del-button" onclick="">Delete</button>
@@ -15,17 +15,5 @@
         <p class="card-info right">Average salary: ${{ department.avg }}</p>
     </div>
 </div>
-<!-- <div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Some text in the Modal..</p>
-    </div>
-</div>
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Some text in the Modal..</p>
-    </div>
-</div> -->
 {% endfor %}
 {% endblock %}
