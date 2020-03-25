@@ -7,12 +7,14 @@ Exported classes:
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import Resource, reqparse, marshal_with
+from flask_restful import (
+    Resource, reqparse, marshal_with,
+    marshal_with_field, abort, fields
+)
 
 from models.department import Department
 from service.operator import Operator
-from rest.utility.jsonresponse import error_response
-from models.utility.fields import DEPARTMENT_FIELDS
+from rest.utility.fields import DEPARTMENT_FIELDS
 
 PARSER = reqparse.RequestParser()
 
@@ -27,17 +29,16 @@ class DepartmentsApi(Resource):
 
     @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def get(self):
-        """Returns all the departments from the db using data_response."""
-
+        """Returns all the departments from the db using marshal."""
         return Operator.get_all(Department)
 
-    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
+    @marshal_with_field(fields.Integer)
     def post(self):
         """Adds a department to the database.
 
         Returns:
-            Department's id using data_response or
-            error object using error_response.
+            Department's id using marshal or
+            aborts with 404.
         """
 
         PARSER.add_argument('name', type=str)
@@ -46,7 +47,7 @@ class DepartmentsApi(Resource):
             department = Department(name=raw_data['name'])
             return Operator.insert(department)
         except IntegrityError:
-            return error_response(404)
+            abort(400)
 
 
 class DepartmentApi(Resource):
@@ -61,23 +62,21 @@ class DepartmentApi(Resource):
         """Gets a department from the database by the id.
 
         Returns:
-            Retreived department using data_response or
-            error object using error_response.
+            Retreived department using marshal or
+            aborts with 404 if department was not present.
         """
 
-        try:
-            return Operator.get_by_id(Department, id_)
-        except AttributeError:
-            return error_response(404)
+        entity = Operator.get_by_id(Department, id_)
+        return entity if entity else abort(404)
 
-    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
+    @marshal_with_field(fields.Boolean)
     def put(self, id_):
         """Updates a department from the database by the id.
 
         Returns:
             True (if the operation was successful)
-            or False using data_response or
-            error object using error_response.
+            or False using marshal or aborts with
+            code 400.
         """
 
         PARSER.add_argument('name', type=str)
@@ -86,19 +85,17 @@ class DepartmentApi(Resource):
             raw_data['id'] = id_
             return Operator.update(Department, raw_data)
         except IntegrityError:
-            return error_response(400)
+            abort(400)
 
     @marshal_with(DEPARTMENT_FIELDS, envelope='data')
     def delete(self, id_):
         """Deletes a department from the database by the id.
 
         Returns:
-            All the departments from the db using data_response or
-            error object using error_response.
+            All the departments from the db using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            Operator.remove(Department, id_)
+        if Operator.remove(Department, id_):
             return Operator.get_all(Department)
-        except UnmappedInstanceError:
-            return error_response(404)
+        abort(404)

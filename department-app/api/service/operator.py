@@ -4,6 +4,8 @@ Exported classes:
     Operator: contains methods to perform CRUD operations.
 """
 
+from copy import copy
+
 from extensions import DB
 
 
@@ -33,7 +35,6 @@ class Operator:
     @classmethod
     def insert(cls, value):
         """Inserts given row into the database."""
-
         DB.session.add(value)
         DB.session.commit()
 
@@ -42,9 +43,9 @@ class Operator:
     @classmethod
     def remove(cls, model, id_):
         """Removes a row from the database by the id."""
-
-        model.query.filter_by(id=id_).delete()
+        effected_rows = model.query.filter_by(id=id_).delete()
         DB.session.commit()
+        return True if effected_rows else False
 
     @classmethod
     def update(cls, model, upd_data):

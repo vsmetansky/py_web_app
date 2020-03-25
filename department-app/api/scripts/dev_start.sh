@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cd ..
-if [["$VIRTUAL_ENV" == ""]]; then
+if [[ "$VIRTUAL_ENV" == "" ]]; then
     source venv/bin/activate
 fi
 export API_CONFIG="./config/app.conf"
 export API_BASE_URL="localhost:8000"
-python wsgi.py
+export API_LOG_DIR="./logs/error.log"
+gunicorn -c config/gunicorn.py wsgi:APP --reload
+bash scripts/del_cache.sh

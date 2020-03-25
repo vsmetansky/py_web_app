@@ -1,5 +1,6 @@
 """Provides rest package with utility modules.
 
 Exported modules:
-    jsonresponse.py: Provides resources with response functions and messages.
+    errors.py: Provides API with error handling.
+    fields.py: Provides routes with marshal serialization dictionaries.
 """

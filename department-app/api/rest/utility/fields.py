@@ -1,5 +1,11 @@
-from flask_restful import fields
+""" Provides routes with marshal serialization dictionaries.
 
+Exported objects:
+    EMPLOYEE_FIELDS: A dictionary of marhal fields for Employee model.
+    DEPARTMENT_FIELDS: A dictionary of marhal fields for Department model.
+"""
+
+from flask_restful import fields
 
 EMPLOYEE_FIELDS = {
     'id': fields.Integer,

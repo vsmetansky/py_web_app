@@ -7,14 +7,16 @@ Exported classes:
 
 from datetime import datetime
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import Resource, reqparse, marshal_with
+from flask_restful import (
+    Resource, reqparse, marshal_with,
+    marshal_with_field, abort, fields
+)
 
 from models.employee import Employee
 from service.operator import Operator
-from rest.utility.jsonresponse import error_response
-from models.utility.fields import EMPLOYEE_FIELDS
+from rest.utility.fields import EMPLOYEE_FIELDS
 
 
 PARSER = reqparse.RequestParser()
@@ -33,23 +35,22 @@ def add_employee_args():
 class EmployeesApi(Resource):
     """Contains GET and POST request handlers for employee table.
 
-    Given class groups handlers which do not require item's id to
+    Groups handlers which do not require item's id to
     perform a database request.
     """
 
     @marshal_with(EMPLOYEE_FIELDS, envelope='data')
     def get(self):
-        """Returns all the employees from the db using data_response."""
-
+        """Returns all the employees from the db using marshal."""
         return Operator.get_all(Employee)
 
-    @marshal_with(EMPLOYEE_FIELDS, envelope='data')
+    @marshal_with_field(fields.Integer)
     def post(self):
         """Adds an employee to the database.
 
         Returns:
-            Employee's id using data_response or
-            error object using error_response.
+            Employee's id using marshal or
+            aborts with code 400.
         """
 
         add_employee_args()
@@ -57,8 +58,8 @@ class EmployeesApi(Resource):
             raw_data = PARSER.parse_args()
             employee = self.__employee_from_raw(raw_data)
             return Operator.insert(employee)
-        except IntegrityError:
-            return error_response(400)
+        except (IntegrityError, ValueError) as e:
+            abort(400)
 
     def __employee_from_raw(self, raw_data):
         return Employee(department_id=raw_data['department_id'],
@@ -81,23 +82,21 @@ class EmployeeApi(Resource):
         """Gets an employee from the database by the id.
 
         Returns:
-            Retreived employee using data_response or
-            error object using error_response.
+            Retreived employee using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            return Operator.get_by_id(Employee, id_)
-        except AttributeError:
-            return error_response(404)
+        entity = Operator.get_by_id(Employee, id_)
+        return entity if entity else abort(404)
 
-    @marshal_with(EMPLOYEE_FIELDS, envelope='data')
+    @marshal_with_field(fields.Boolean)
     def put(self, id_):
         """Updates an employee from the database by the id.
 
         Returns:
             True (if the operation was successful)
-            or False using data_response or
-            error object using error_response.
+            or False using marshal or aborts
+            with 400 code.
         """
 
         add_employee_args()
@@ -105,20 +104,18 @@ class EmployeeApi(Resource):
             raw_data = PARSER.parse_args()
             raw_data['id'] = id_
             return Operator.update(Employee, raw_data)
-        except IntegrityError:
-            return error_response(404)
+        except (IntegrityError, InternalError) as e:
+            abort(400)
 
     @marshal_with(EMPLOYEE_FIELDS, envelope='data')
     def delete(self, id_):
         """Deletes an employee from the database by the id.
 
         Returns:
-            All the employees from the db using data_response or
-            error object using error_response.
+            All the employees from the db using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            Operator.remove(Employee, id_)
+        if Operator.remove(Employee, id_):
             return Operator.get_all(Employee)
-        except UnmappedInstanceError:
-            return error_response(404)
+        abort(404)
