@@ -11,7 +11,7 @@ from extensions import DB
 from factories import create_test_app
 from models.department import Department
 from models.employee import Employee
-from models.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
+from rest.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
 
 
 MAX_ENTITY_NUM = 10
@@ -68,12 +68,13 @@ class DepartmentsApiTest(unittest.TestCase):
         self.client.delete(f'/departments/{test_entity_id}')
 
         get_response = self.client.get(f'/departments/{test_entity_id}')
-        self.assertIsNone(get_response.get_json())
+        self.assertIsNotNone(get_response.get_json().get('message'))
 
     def test_update(self):
         test_entity_new = Department.random()
-
         test_entity_new_id = random.randint(1, MAX_ENTITY_NUM)
+        test_entity_new.id = test_entity_new_id
+
         self.client.put(
             f'/departments/{test_entity_new_id}', data=marshal(test_entity_new, DEPARTMENT_FIELDS))
 
@@ -132,14 +133,15 @@ class EmployeesApiTest(unittest.TestCase):
         self.client.delete(f'/employees/{test_entity_id}')
 
         get_response = self.client.get(f'/employees/{test_entity_id}')
-        self.assertIsNone(get_response.get_json())
+        self.assertIsNotNone(get_response.get_json().get('message'))
 
     def test_update(self):
-        test_entity_new = marshal(Employee.random(), EMPLOYEE_FIELDS)
-
+        test_entity_new = Employee.random()
         test_entity_new_id = random.randint(1, MAX_ENTITY_NUM)
+        test_entity_new.id = test_entity_new_id
+
         self.client.put(
-            f'/employees/{test_entity_new_id}', data=test_entity_new)
+            f'/employees/{test_entity_new_id}', data=marshal(test_entity_new, EMPLOYEE_FIELDS))
 
         get_response = self.client.get(f'/employees/{test_entity_new_id}')
         self.assertEqual(marshal(test_entity_new, EMPLOYEE_FIELDS),
