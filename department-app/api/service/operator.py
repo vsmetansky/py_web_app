@@ -56,9 +56,6 @@ class Operator:
             otherwise.
         """
 
-        old_value = model.query.get(upd_data.get('id'))
-        if old_value:
-            model.query.filter_by(id=old_value.id).update(upd_data)
-            DB.session.commit()
-            return True
-        return False
+        effected_rows = model.query.filter_by(id=upd_data.id).update(upd_data)
+        DB.session.commit()
+        return True if effected_rows else False
