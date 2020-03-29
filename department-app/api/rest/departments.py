@@ -27,7 +27,7 @@ class DepartmentsApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
+    @marshal_with(DEPARTMENT_FIELDS)
     def get(self):
         """Returns all the departments from the db using marshal."""
         return Operator.get_all(Department)
@@ -57,7 +57,7 @@ class DepartmentApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
+    @marshal_with(DEPARTMENT_FIELDS)
     def get(self, id_):
         """Gets a department from the database by the id.
 
@@ -87,7 +87,7 @@ class DepartmentApi(Resource):
         except IntegrityError:
             abort(400)
 
-    @marshal_with(DEPARTMENT_FIELDS, envelope='data')
+    @marshal_with(DEPARTMENT_FIELDS)
     def delete(self, id_):
         """Deletes a department from the database by the id.
 

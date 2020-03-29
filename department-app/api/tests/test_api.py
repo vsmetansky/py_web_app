@@ -41,14 +41,11 @@ class DepartmentsApiTest(unittest.TestCase):
 
     def test_get(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
-
         response = self.client.get(f'/departments/{test_entity_id}')
-
         self.assertIsNotNone(response.get_json().get('data'))
 
     def test_get_all(self):
         response = self.client.get('/departments')
-
         self.assertEqual(MAX_ENTITY_NUM,
                          len(response.get_json().get('data')))
 
@@ -57,13 +54,14 @@ class DepartmentsApiTest(unittest.TestCase):
         post_response = self.client.post(
             '/departments', data=marshal(test_entity, DEPARTMENT_FIELDS))
 
-        test_entity_id = post_response.get_json().get('data')
+        test_entity_id = post_response.get_json()
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/departments/{test_entity.id}')
+        get_response_data = get_response.get_json()
         self.assertEqual(marshal(test_entity, DEPARTMENT_FIELDS),
-                         get_response.get_json().get('data'))
+                         marshal(get_response_data, DEPARTMENT_FIELDS))
 
     def test_delete(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)

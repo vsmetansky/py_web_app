@@ -39,7 +39,7 @@ class EmployeesApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(EMPLOYEE_FIELDS, envelope='data')
+    @marshal_with(EMPLOYEE_FIELDS)
     def get(self):
         """Returns all the employees from the db using marshal."""
         return Operator.get_all(Employee)
@@ -77,7 +77,7 @@ class EmployeeApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(EMPLOYEE_FIELDS, envelope='data')
+    @marshal_with(EMPLOYEE_FIELDS)
     def get(self, id_):
         """Gets an employee from the database by the id.
 
@@ -107,7 +107,7 @@ class EmployeeApi(Resource):
         except (IntegrityError, InternalError) as e:
             abort(400)
 
-    @marshal_with(EMPLOYEE_FIELDS, envelope='data')
+    @marshal_with(EMPLOYEE_FIELDS)
     def delete(self, id_):
         """Deletes an employee from the database by the id.
 
