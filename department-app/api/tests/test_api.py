@@ -42,12 +42,12 @@ class DepartmentsApiTest(unittest.TestCase):
     def test_get(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
         response = self.client.get(f'/departments/{test_entity_id}')
-        self.assertIsNotNone(response.get_json().get('data'))
+        self.assertIsNotNone(response.get_json())
 
     def test_get_all(self):
         response = self.client.get('/departments')
         self.assertEqual(MAX_ENTITY_NUM,
-                         len(response.get_json().get('data')))
+                         len(response.get_json()))
 
     def test_insert(self):
         test_entity = Department.random()
@@ -68,19 +68,18 @@ class DepartmentsApiTest(unittest.TestCase):
         self.client.delete(f'/departments/{test_entity_id}')
 
         get_response = self.client.get(f'/departments/{test_entity_id}')
-        self.assertIsNone(get_response.get_json().get('data'))
+        self.assertIsNone(get_response.get_json())
 
     def test_update(self):
-        test_entity_new = marshal(Department.random(), DEPARTMENT_FIELDS)
+        test_entity_new = Department.random()
 
         test_entity_new_id = random.randint(1, MAX_ENTITY_NUM)
         self.client.put(
-            f'/departments/{test_entity_new_id}', data=test_entity_new)
+            f'/departments/{test_entity_new_id}', data=marshal(test_entity_new, DEPARTMENT_FIELDS))
 
         get_response = self.client.get(f'/departments/{test_entity_new_id}')
-        test_entity_new['id'] = test_entity_new_id
-        self.assertEqual(test_entity_new,
-                         get_response.get_json().get('data'))
+        self.assertEqual(marshal(test_entity_new, DEPARTMENT_FIELDS),
+                         marshal(get_response.get_json(), DEPARTMENT_FIELDS))
 
 
 class EmployeesApiTest(unittest.TestCase):
@@ -107,36 +106,33 @@ class EmployeesApiTest(unittest.TestCase):
 
     def test_get(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
-
         response = self.client.get(f'/employees/{test_entity_id}')
-
-        self.assertIsNotNone(response.get_json().get('data'))
+        self.assertIsNotNone(response.get_json())
 
     def test_get_all(self):
         response = self.client.get('/employees')
-
         self.assertEqual(MAX_ENTITY_NUM,
-                         len(response.get_json().get('data')))
+                         len(response.get_json()))
 
     def test_insert(self):
         test_entity = Employee.random()
         post_response = self.client.post(
             '/employees', data=marshal(test_entity, EMPLOYEE_FIELDS))
 
-        test_entity_id = post_response.get_json().get('data')
+        test_entity_id = post_response.get_json()
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/employees/{test_entity.id}')
         self.assertEqual(marshal(test_entity, EMPLOYEE_FIELDS),
-                         get_response.get_json().get('data'))
+                         marshal(get_response.get_json(), EMPLOYEE_FIELDS))
 
     def test_delete(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
         self.client.delete(f'/employees/{test_entity_id}')
 
         get_response = self.client.get(f'/employees/{test_entity_id}')
-        self.assertIsNone(get_response.get_json().get('data'))
+        self.assertIsNone(get_response.get_json())
 
     def test_update(self):
         test_entity_new = marshal(Employee.random(), EMPLOYEE_FIELDS)
@@ -146,6 +142,5 @@ class EmployeesApiTest(unittest.TestCase):
             f'/employees/{test_entity_new_id}', data=test_entity_new)
 
         get_response = self.client.get(f'/employees/{test_entity_new_id}')
-        test_entity_new['id'] = test_entity_new_id
-        self.assertEqual(test_entity_new,
-                         get_response.get_json().get('data'))
+        self.assertEqual(marshal(test_entity_new, EMPLOYEE_FIELDS),
+                         marshal(get_response.get_json(), EMPLOYEE_FIELDS))
