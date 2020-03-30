@@ -24,11 +24,17 @@ PARSER = reqparse.RequestParser()
 
 def add_employee_args():
     """Adds arguments to the parser"""
-
     PARSER.add_argument('name', type=str)
     PARSER.add_argument('salary', type=int)
     PARSER.add_argument('birthdate', type=str)
     PARSER.add_argument('department_id', type=int)
+
+
+def add_search_query_args():
+    """Adds search arguments to the parser"""
+    PARSER.add_argument('name', type=str, location='args')
+    PARSER.add_argument('salary', type=int, location='args')
+    PARSER.add_argument('birthdate', type=str, location='args')
 
 
 # pylint: disable=R0201
@@ -41,7 +47,7 @@ class EmployeesApi(Resource):
 
     @marshal_with(EMPLOYEE_FIELDS)
     def get(self):
-        """Returns all the employees from the db using marshal."""
+        """Returns filtered list of employees from the db using marshal."""
         return Operator.get_all(Employee)
 
     @marshal_with_field(fields.Integer)

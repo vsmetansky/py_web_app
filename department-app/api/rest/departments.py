@@ -11,12 +11,18 @@ from flask_restful import (
     Resource, reqparse, marshal_with,
     marshal_with_field, abort, fields
 )
+from flask import request
 
 from models.department import Department
 from service.operator import Operator
 from rest.utility.fields import DEPARTMENT_FIELDS
 
 PARSER = reqparse.RequestParser()
+
+
+def add_search_query_args(request):
+    """Adds search arguments to the parser"""
+    PARSER.add_argument('name', type=str, location='args')
 
 
 # pylint: disable=R0201
@@ -29,8 +35,10 @@ class DepartmentsApi(Resource):
 
     @marshal_with(DEPARTMENT_FIELDS)
     def get(self):
-        """Returns all the departments from the db using marshal."""
-        return Operator.get_all(Department)
+        """Returns filtered list of departments from the db using marshal."""
+        add_search_query_args()
+        filter_data = PARSER.parse_args()
+        return Operator.get_all(Department, vars(filter_data))
 
     @marshal_with_field(fields.Integer)
     def post(self):

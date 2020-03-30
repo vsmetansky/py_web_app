@@ -13,14 +13,18 @@ class Operator:
     """Contains methods to perform CRUD operations."""
 
     @classmethod
-    def get_all(cls, model):
-        """Gets all rows of given model from the database.
+    def get_all(cls, model, filter_options=None):
+        """Gets all rows of given model from the database or 
+        a list of rows, that corresponds to provided filter.
 
         Returns:
             A list of fetched rows in the form of objects.
         """
 
-        return model.query.all()
+        try:
+            return model.query.filter_by(**filter_options).all()
+        except TypeError:
+            return model.query.all()
 
     @classmethod
     def get_by_id(cls, model, id_):
