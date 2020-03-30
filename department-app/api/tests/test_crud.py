@@ -3,15 +3,15 @@
 import unittest
 import random
 
-from flask_restful import marshal
-
 from tests.utility.db_setup import db_init, db_delete
 from factories import create_test_app
 from extensions import DB
 from service.operator import Operator
 from models.department import Department
 from models.employee import Employee
-from rest.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
+from rest.schemas.department import DepartmentSchema
+from rest.schemas.employee import EmployeeSchema
+from rest.schemas.funcs import marsh, lomarsh
 
 MAX_ENTITY_NUM = 10
 
@@ -62,13 +62,12 @@ class DepartmentsTest(unittest.TestCase):
         self.assertFalse(Employee.query.filter_by(
             department_id=test_entity_id).all())
 
-    # def test_update(self):
-    #     test_entity_new = Department.random()
-    #     test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-    #     Operator.update(Department, marshal(
-    #         test_entity_new, DEPARTMENT_FIELDS))
-    #     self.assertEqual(marshal(test_entity_new, DEPARTMENT_FIELDS),
-    #                      marshal(Operator.get_by_id(Department, test_entity_new.id), DEPARTMENT_FIELDS))
+    def test_update(self):
+        test_entity_new = Department.random()
+        test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
+
+        self.assertTrue(Operator.update(Department, marsh(
+            vars(test_entity_new), DepartmentSchema)))
 
 
 class EmployeesTest(unittest.TestCase):
@@ -118,9 +117,9 @@ class EmployeesTest(unittest.TestCase):
         self.assertIsNotNone(Operator.get_by_id(
             Department, test_entity_ref_id))
 
-    # def test_update(self):
-    #     test_entity_new = Employee.random()
-    #     test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-    #     Operator.update(Employee, marshal(test_entity_new, EMPLOYEE_FIELDS))
-    #     self.assertEqual(marshal(test_entity_new, EMPLOYEE_FIELDS),
-    #                      marshal(Operator.get_by_id(Employee, test_entity_new.id), EMPLOYEE_FIELDS))
+    def test_update(self):
+        test_entity_new = Employee.random()
+        test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
+        Operator.update(Employee, marsh(test_entity_new, EmployeeSchema))
+        self.assertEqual(marsh(test_entity_new, EmployeeSchema),
+                         marsh(Operator.get_by_id(Employee, test_entity_new.id), EmployeeSchema))

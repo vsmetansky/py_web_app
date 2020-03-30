@@ -4,14 +4,14 @@
 import unittest
 import random
 
-from flask_restful import marshal
-
 from tests.utility.db_setup import db_init, db_delete
 from extensions import DB
 from factories import create_test_app
 from models.department import Department
 from models.employee import Employee
-from rest.utility.fields import DEPARTMENT_FIELDS, EMPLOYEE_FIELDS
+from rest.schemas.department import DepartmentSchema
+from rest.schemas.employee import EmployeeSchema
+from rest.schemas.funcs import marsh
 
 
 MAX_ENTITY_NUM = 10
@@ -52,16 +52,16 @@ class DepartmentsApiTest(unittest.TestCase):
     def test_insert(self):
         test_entity = Department.random()
         post_response = self.client.post(
-            '/departments', data=marshal(test_entity, DEPARTMENT_FIELDS))
+            '/departments', data=marsh(test_entity, DepartmentSchema))
 
-        test_entity_id = post_response.get_json()
+        test_entity_id = post_response.get_json().get('data')
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/departments/{test_entity.id}')
         get_response_data = get_response.get_json()
-        self.assertEqual(marshal(test_entity, DEPARTMENT_FIELDS),
-                         marshal(get_response_data, DEPARTMENT_FIELDS))
+        self.assertEqual(marsh(test_entity, DepartmentSchema),
+                         marsh(get_response_data, DepartmentSchema))
 
     def test_delete(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
@@ -76,11 +76,11 @@ class DepartmentsApiTest(unittest.TestCase):
         test_entity_new.id = test_entity_new_id
 
         self.client.put(
-            f'/departments/{test_entity_new_id}', data=marshal(test_entity_new, DEPARTMENT_FIELDS))
+            f'/departments/{test_entity_new_id}', data=marsh(test_entity_new, DepartmentSchema))
 
         get_response = self.client.get(f'/departments/{test_entity_new_id}')
-        self.assertEqual(marshal(test_entity_new, DEPARTMENT_FIELDS),
-                         marshal(get_response.get_json(), DEPARTMENT_FIELDS))
+        self.assertEqual(marsh(test_entity_new, DepartmentSchema),
+                         marsh(get_response.get_json(), DepartmentSchema))
 
 
 class EmployeesApiTest(unittest.TestCase):
@@ -118,15 +118,15 @@ class EmployeesApiTest(unittest.TestCase):
     def test_insert(self):
         test_entity = Employee.random()
         post_response = self.client.post(
-            '/employees', data=marshal(test_entity, EMPLOYEE_FIELDS))
+            '/employees', data=marsh(test_entity, EmployeeSchema))
 
-        test_entity_id = post_response.get_json()
+        test_entity_id = post_response.get_json().get('data')
         test_entity.id = test_entity_id
 
         get_response = self.client.get(
             f'/employees/{test_entity.id}')
-        self.assertEqual(marshal(test_entity, EMPLOYEE_FIELDS),
-                         marshal(get_response.get_json(), EMPLOYEE_FIELDS))
+        self.assertEqual(marsh(test_entity, EmployeeSchema),
+                         marsh(get_response.get_json(), EmployeeSchema))
 
     def test_delete(self):
         test_entity_id = random.randint(1, MAX_ENTITY_NUM)
@@ -141,8 +141,8 @@ class EmployeesApiTest(unittest.TestCase):
         test_entity_new.id = test_entity_new_id
 
         self.client.put(
-            f'/employees/{test_entity_new_id}', data=marshal(test_entity_new, EMPLOYEE_FIELDS))
+            f'/employees/{test_entity_new_id}', data=marsh(test_entity_new, EmployeeSchema))
 
         get_response = self.client.get(f'/employees/{test_entity_new_id}')
-        self.assertEqual(marshal(test_entity_new, EMPLOYEE_FIELDS),
-                         marshal(get_response.get_json(), EMPLOYEE_FIELDS))
+        self.assertEqual(marsh(test_entity_new, EmployeeSchema),
+                         marsh(get_response.get_json(), EmployeeSchema))

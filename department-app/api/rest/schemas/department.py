@@ -11,7 +11,7 @@ class DepartmentSchema(Schema):
 
     id = fields.Integer()
     name = fields.Str()
-    employees = fields.Nested(EmployeeSchema, many=True)
+    employees = fields.List(fields.Nested(EmployeeSchema))
 
 
 class DepartmentSearchSchema():
