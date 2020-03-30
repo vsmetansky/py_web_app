@@ -60,6 +60,6 @@ class Operator:
             otherwise.
         """
 
-        effected_rows = model.query.filter_by(id=upd_data.id).update(upd_data)
+        effected_rows = model.query.filter_by(id=upd_data.get('id')).update(upd_data)
         DB.session.commit()
         return True if effected_rows else False

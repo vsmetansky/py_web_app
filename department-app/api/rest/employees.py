@@ -9,13 +9,14 @@ from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from marshmallow import fields
+from marshmallow import fields, ValidationError
 from flask_restful import Resource, abort
+from flask import request
 
 from models.employee import Employee
 from service.operator import Operator
 from rest.schemas.employee import EmployeeSchema
-from rest.schemas.funcs import marsh, marsh_with, marsh_with_field
+from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
@@ -26,7 +27,7 @@ class EmployeesApi(Resource):
     perform a database request.
     """
 
-    @marsh_with(EmployeeSchema)
+    @marsh_with(EmployeeSchema, to_many=True)
     def get(self):
         """Returns filtered list of employees from the db using marshal."""
         return Operator.get_all(Employee)
@@ -41,19 +42,11 @@ class EmployeesApi(Resource):
         """
 
         try:
-            raw_data = marsh(request.form, EmployeeSchema)
-            employee = self.__employee_from_raw(raw_data)
-            return Operator.insert(employee)
-        except (IntegrityError, ValueError) as e:
+            raw_data = lomarsh(request.form, EmployeeSchema)
+            raw_data['id'] = None
+            return Operator.insert(Employee(**raw_data))
+        except (IntegrityError, ValidationError):
             abort(400)
-
-    def __employee_from_raw(self, raw_data):
-        return Employee(department_id=raw_data['department_id'],
-                        name=raw_data['name'], salary=raw_data['salary'],
-                        birthdate=self.__date_from_raw(raw_data['birthdate']))
-
-    def __date_from_raw(self, raw_date):
-        return datetime.strptime(raw_date, '%Y-%m-%d').date()
 
 
 class EmployeeApi(Resource):
@@ -85,15 +78,14 @@ class EmployeeApi(Resource):
             with 400 code.
         """
 
-        add_employee_args()
         try:
-            raw_data = marsh(request.form, EmployeeSchema)
+            raw_data = lomarsh(request.form, EmployeeSchema)
             raw_data['id'] = id_
             return Operator.update(Employee, raw_data)
-        except (IntegrityError, InternalError) as e:
+        except (IntegrityError, InternalError, ValidationError):
             abort(400)
 
-    @marsh_with(EmployeeSchema)
+    @marsh_with(EmployeeSchema, to_many=True)
     def delete(self, id_):
         """Deletes an employee from the database by the id.
 

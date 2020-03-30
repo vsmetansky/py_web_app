@@ -3,14 +3,18 @@
 from marshmallow import Schema
 
 
-def marsh(value, schema):
-    return schema().dump(value)
+def lomarsh(value, schema):
+    return schema().load(value)
 
 
-def marsh_with(schema):
+def marsh(value, schema, to_many=False):
+    return schema().dump(value, many=to_many)
+
+
+def marsh_with(schema, to_many=False):
     def marsh_with_real(func):
         def wrapped(*args, **kwargs):
-            return marsh(func(*args, **kwargs), schema), 200
+            return marsh(func(*args, **kwargs), schema, to_many), 200
         return wrapped
     return marsh_with_real
 

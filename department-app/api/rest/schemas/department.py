@@ -3,6 +3,7 @@
 from marshmallow import Schema, fields
 
 from models.department import Department
+from rest.schemas.employee import EmployeeSchema
 
 
 class DepartmentSchema(Schema):
@@ -10,6 +11,7 @@ class DepartmentSchema(Schema):
 
     id = fields.Integer()
     name = fields.Str()
+    employees = fields.Nested(EmployeeSchema, many=True)
 
 
 class DepartmentSearchSchema():

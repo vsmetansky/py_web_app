@@ -14,7 +14,7 @@ from flask import request
 from models.department import Department
 from service.operator import Operator
 from rest.schemas.department import DepartmentSchema
-from rest.schemas.funcs import marsh, marsh_with, marsh_with_field
+from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
@@ -25,7 +25,7 @@ class DepartmentsApi(Resource):
     perform a database request.
     """
 
-    @marsh_with(DepartmentSchema)
+    @marsh_with(DepartmentSchema, to_many=True)
     def get(self):
         """Returns filtered list of departments from the db using marshal."""
         return Operator.get_all(Department)
@@ -40,7 +40,8 @@ class DepartmentsApi(Resource):
         """
 
         try:
-            raw_data = marsh(request.form, DepartmentSchema)
+            raw_data = lomarsh(request.form, DepartmentSchema)
+            raw_data['id'] = None
             return Operator.insert(Department(**raw_data))
         except IntegrityError:
             abort(400)
@@ -65,7 +66,7 @@ class DepartmentApi(Resource):
         entity = Operator.get_by_id(Department, id_)
         return entity if entity else abort(404)
 
-    @marsh_with_field(fields.Boolean)
+    @marsh_with_field(fields.Boolean())
     def put(self, id_):
         """Updates a department from the database by the id.
 
@@ -76,13 +77,13 @@ class DepartmentApi(Resource):
         """
 
         try:
-            raw_data = marsh(request.form, DepartmentSchema)
+            raw_data = lomarsh(request.form, DepartmentSchema)
             raw_data['id'] = id_
             return Operator.update(Department, raw_data)
-        except IntegrityError:
+        except (IntegrityError, ValidationError):
             abort(400)
 
-    @marsh_with(DepartmentSchema)
+    @marsh_with(DepartmentSchema, to_many=True)
     def delete(self, id_):
         """Deletes a department from the database by the id.
 
