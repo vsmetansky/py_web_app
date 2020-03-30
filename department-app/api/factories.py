@@ -9,7 +9,7 @@ from flask import Flask
 
 from rest.departments import DepartmentApi, DepartmentsApi
 from rest.employees import EmployeeApi, EmployeesApi
-from extensions import API, DB, MA, MIGRATE
+from extensions import API, DB, MIGRATE
 
 
 def add_resources(api):
@@ -34,7 +34,6 @@ def create_app():
     add_resources(API)
 
     DB.init_app(app)
-    MA.init_app(app)
     MIGRATE.init_app(app, DB)
     API.init_app(app)
 
@@ -53,7 +52,6 @@ def create_test_app(api_used=False):
     app.config.from_envvar('API_TEST_CONFIG')
 
     DB.init_app(app)
-    MA.init_app(app)
 
     if api_used:
         API.resources.clear()

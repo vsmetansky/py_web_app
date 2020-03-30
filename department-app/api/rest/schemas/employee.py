@@ -1,13 +1,16 @@
 """Declares schemas for 'employees' route."""
 
 
-from extensions import MA
+from marshmallow import Schema, fields
+
 from models.employee import Employee
 
 
-class EmployeeSchema(MA.SQLAlchemyAutoSchema):
+class EmployeeSchema(Schema):
     """Schema mapping for 'Employee' model."""
 
-    class Meta:
-        model = Employee
-        include_fk = True
+    id = fields.Integer()
+    name = fields.Str()
+    department_id = fields.Integer()
+    salary = fields.Integer()
+    birthdate = fields.Str()

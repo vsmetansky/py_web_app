@@ -1,12 +1,16 @@
 """Declares schemas for 'departments' route."""
 
-from extensions import MA
+from marshmallow import Schema, fields
+
 from models.department import Department
 
 
-class DepartmentSchema(MA.SQLAlchemyAutoSchema):
+class DepartmentSchema(Schema):
     """Schema mapping for 'Department' model."""
-    
-    class Meta:
-        model = Department
-        include_fk = True
+
+    id = fields.Integer()
+    name = fields.Str()
+
+
+class DepartmentSearchSchema():
+    pass

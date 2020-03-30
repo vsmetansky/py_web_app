@@ -7,22 +7,14 @@ Exported classes:
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import (
-    Resource, reqparse, marshal_with,
-    marshal_with_field, abort, fields
-)
+from flask_restful import Resource, abort
+from marshmallow import fields
 from flask import request
 
 from models.department import Department
 from service.operator import Operator
-from rest.utility.fields import DEPARTMENT_FIELDS
-
-PARSER = reqparse.RequestParser()
-
-
-def add_search_query_args(request):
-    """Adds search arguments to the parser"""
-    PARSER.add_argument('name', type=str, location='args')
+from rest.schemas.department import DepartmentSchema
+from rest.schemas.funcs import marsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
@@ -33,14 +25,12 @@ class DepartmentsApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(DEPARTMENT_FIELDS)
+    @marsh_with(DepartmentSchema)
     def get(self):
         """Returns filtered list of departments from the db using marshal."""
-        add_search_query_args()
-        filter_data = PARSER.parse_args()
-        return Operator.get_all(Department, vars(filter_data))
+        return Operator.get_all(Department)
 
-    @marshal_with_field(fields.Integer)
+    @marsh_with_field(fields.Integer())
     def post(self):
         """Adds a department to the database.
 
@@ -49,11 +39,9 @@ class DepartmentsApi(Resource):
             aborts with 404.
         """
 
-        PARSER.add_argument('name', type=str)
         try:
-            raw_data = PARSER.parse_args()
-            department = Department(name=raw_data['name'])
-            return Operator.insert(department)
+            raw_data = marsh(request.form, DepartmentSchema)
+            return Operator.insert(Department(**raw_data))
         except IntegrityError:
             abort(400)
 
@@ -65,7 +53,7 @@ class DepartmentApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(DEPARTMENT_FIELDS)
+    @marsh_with(DepartmentSchema)
     def get(self, id_):
         """Gets a department from the database by the id.
 
@@ -77,7 +65,7 @@ class DepartmentApi(Resource):
         entity = Operator.get_by_id(Department, id_)
         return entity if entity else abort(404)
 
-    @marshal_with_field(fields.Boolean)
+    @marsh_with_field(fields.Boolean)
     def put(self, id_):
         """Updates a department from the database by the id.
 
@@ -87,15 +75,14 @@ class DepartmentApi(Resource):
             code 400.
         """
 
-        PARSER.add_argument('name', type=str)
         try:
-            raw_data = PARSER.parse_args()
+            raw_data = marsh(request.form, DepartmentSchema)
             raw_data['id'] = id_
             return Operator.update(Department, raw_data)
         except IntegrityError:
             abort(400)
 
-    @marshal_with(DEPARTMENT_FIELDS)
+    @marsh_with(DepartmentSchema)
     def delete(self, id_):
         """Deletes a department from the database by the id.
 

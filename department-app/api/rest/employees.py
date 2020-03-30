@@ -9,32 +9,13 @@ from datetime import datetime
 
 from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import (
-    Resource, reqparse, marshal_with,
-    marshal_with_field, abort, fields
-)
+from marshmallow import fields
+from flask_restful import Resource, abort
 
 from models.employee import Employee
 from service.operator import Operator
-from rest.utility.fields import EMPLOYEE_FIELDS
-
-
-PARSER = reqparse.RequestParser()
-
-
-def add_employee_args():
-    """Adds arguments to the parser"""
-    PARSER.add_argument('name', type=str)
-    PARSER.add_argument('salary', type=int)
-    PARSER.add_argument('birthdate', type=str)
-    PARSER.add_argument('department_id', type=int)
-
-
-def add_search_query_args():
-    """Adds search arguments to the parser"""
-    PARSER.add_argument('name', type=str, location='args')
-    PARSER.add_argument('salary', type=int, location='args')
-    PARSER.add_argument('birthdate', type=str, location='args')
+from rest.schemas.employee import EmployeeSchema
+from rest.schemas.funcs import marsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
@@ -45,12 +26,12 @@ class EmployeesApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(EMPLOYEE_FIELDS)
+    @marsh_with(EmployeeSchema)
     def get(self):
         """Returns filtered list of employees from the db using marshal."""
         return Operator.get_all(Employee)
 
-    @marshal_with_field(fields.Integer)
+    @marsh_with_field(fields.Integer())
     def post(self):
         """Adds an employee to the database.
 
@@ -59,9 +40,8 @@ class EmployeesApi(Resource):
             aborts with code 400.
         """
 
-        add_employee_args()
         try:
-            raw_data = PARSER.parse_args()
+            raw_data = marsh(request.form, EmployeeSchema)
             employee = self.__employee_from_raw(raw_data)
             return Operator.insert(employee)
         except (IntegrityError, ValueError) as e:
@@ -83,7 +63,7 @@ class EmployeeApi(Resource):
     perform a database request.
     """
 
-    @marshal_with(EMPLOYEE_FIELDS)
+    @marsh_with(EmployeeSchema)
     def get(self, id_):
         """Gets an employee from the database by the id.
 
@@ -95,7 +75,7 @@ class EmployeeApi(Resource):
         entity = Operator.get_by_id(Employee, id_)
         return entity if entity else abort(404)
 
-    @marshal_with_field(fields.Boolean)
+    @marsh_with_field(fields.Boolean())
     def put(self, id_):
         """Updates an employee from the database by the id.
 
@@ -107,13 +87,13 @@ class EmployeeApi(Resource):
 
         add_employee_args()
         try:
-            raw_data = PARSER.parse_args()
+            raw_data = marsh(request.form, EmployeeSchema)
             raw_data['id'] = id_
             return Operator.update(Employee, raw_data)
         except (IntegrityError, InternalError) as e:
             abort(400)
 
-    @marshal_with(EMPLOYEE_FIELDS)
+    @marsh_with(EmployeeSchema)
     def delete(self, id_):
         """Deletes an employee from the database by the id.
 
