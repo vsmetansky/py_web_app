@@ -8,12 +8,12 @@ Exported classes:
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from flask_restful import Resource, abort
-from marshmallow import fields
+from marshmallow import fields, ValidationError
 from flask import request
 
 from models.department import Department
 from service.operator import Operator
-from rest.schemas.department import DepartmentSchema
+from rest.schemas.department import DepartmentSchema, DepartmentSearchSchema
 from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
@@ -28,7 +28,11 @@ class DepartmentsApi(Resource):
     @marsh_with(DepartmentSchema, to_many=True)
     def get(self):
         """Returns filtered list of departments from the db using marshal."""
-        return Operator.get_all(Department)
+        try:
+            search_params = lomarsh(request.args, DepartmentSearchSchema)
+            return Operator.get_all(Department, search_expr=self.get_search_expr(search_params))
+        except ValidationError:
+            abort(400)
 
     @marsh_with_field(fields.Integer())
     def post(self):
@@ -45,6 +49,10 @@ class DepartmentsApi(Resource):
             return Operator.insert(Department(**raw_data))
         except IntegrityError:
             abort(400)
+
+    def get_search_expr(self, s_params):
+        if s_params.get('name'):
+            return (Department.name.like(f'%{s_params.get("name")}%'),)
 
 
 class DepartmentApi(Resource):

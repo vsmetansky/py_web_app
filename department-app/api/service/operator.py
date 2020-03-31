@@ -13,7 +13,7 @@ class Operator:
     """Contains methods to perform CRUD operations."""
 
     @classmethod
-    def get_all(cls, model, filter_options=None):
+    def get_all(cls, model, search_expr=None, search_args=None):
         """Gets all rows of given model from the database or 
         a list of rows, that corresponds to provided filter.
 
@@ -21,10 +21,11 @@ class Operator:
             A list of fetched rows in the form of objects.
         """
 
-        try:
-            return model.query.filter_by(**filter_options).all()
-        except TypeError:
-            return model.query.all()
+        if search_args:
+            return model.query.filter_by(**search_args).all()
+        elif search_expr:
+            return model.query.filter(*search_expr).all()
+        return model.query.all()
 
     @classmethod
     def get_by_id(cls, model, id_):
@@ -60,6 +61,7 @@ class Operator:
             otherwise.
         """
 
-        effected_rows = model.query.filter_by(id=upd_data.get('id')).update(upd_data)
+        effected_rows = model.query.filter_by(
+            id=upd_data.get('id')).update(upd_data)
         DB.session.commit()
         return True if effected_rows else False

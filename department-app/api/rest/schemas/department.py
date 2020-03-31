@@ -14,5 +14,7 @@ class DepartmentSchema(Schema):
     employees = fields.List(fields.Nested(EmployeeSchema))
 
 
-class DepartmentSearchSchema():
-    pass
+class DepartmentSearchSchema(Schema):
+    """Schema for performing searches on 'Department' resources."""
+
+    name = fields.Str()

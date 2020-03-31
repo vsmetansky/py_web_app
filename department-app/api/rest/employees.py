@@ -7,7 +7,7 @@ Exported classes:
 
 from datetime import datetime
 
-from sqlalchemy.exc import IntegrityError, InternalError
+from sqlalchemy.exc import IntegrityError, InternalError, ArgumentError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 from marshmallow import fields, ValidationError
 from flask_restful import Resource, abort
@@ -15,7 +15,7 @@ from flask import request
 
 from models.employee import Employee
 from service.operator import Operator
-from rest.schemas.employee import EmployeeSchema
+from rest.schemas.employee import EmployeeSchema, EmployeeSearchSchema
 from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
@@ -30,7 +30,11 @@ class EmployeesApi(Resource):
     @marsh_with(EmployeeSchema, to_many=True)
     def get(self):
         """Returns filtered list of employees from the db using marshal."""
-        return Operator.get_all(Employee)
+        try:
+            search_params = lomarsh(request.args, EmployeeSearchSchema)
+            return Operator.get_all(Employee, search_expr=self.get_search_expr(search_params))
+        except ValidationError:
+            abort(400)
 
     @marsh_with_field(fields.Integer())
     def post(self):
@@ -47,6 +51,18 @@ class EmployeesApi(Resource):
             return Operator.insert(Employee(**raw_data))
         except (IntegrityError, ValidationError):
             abort(400)
+
+    def get_search_expr(self, s_params):
+        try:
+            search_expr = [
+                Employee.birthdate >= s_params.get('begin'),
+                Employee.birthdate <= s_params.get('end')
+            ]
+            if s_params.get('name'):
+                search_expr.append(Employee.name.like(f'%{s_params.get("name")}%'))
+            return search_expr
+        except ArgumentError:
+            return None
 
 
 class EmployeeApi(Resource):
