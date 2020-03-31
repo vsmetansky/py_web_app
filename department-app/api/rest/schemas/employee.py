@@ -1,7 +1,8 @@
 """Declares schemas for 'employees' route.
 
 Exported classes:
-    EmployeeSchema: blah.
+    EmployeeSchema: Schema mapping for 'Employee' model.
+    EmployeeSearchSchema: Schema for performing searches on 'Employee' resources.
 """
 
 from datetime import datetime

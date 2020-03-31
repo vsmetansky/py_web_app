@@ -1,4 +1,9 @@
-"""Declares schemas for 'departments' route."""
+"""Declares schemas for 'departments' route.
+
+Exported classes:
+    DepartmentSchema: Schema mapping for 'Department' model.
+    DepartmentSearchSchema: Schema for performing searches on 'Department' resources.
+"""
 
 from marshmallow import Schema, fields
 
