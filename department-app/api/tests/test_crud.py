@@ -9,6 +9,9 @@ from extensions import DB
 from service.operator import Operator
 from models.department import Department
 from models.employee import Employee
+from rest.schemas.department import DepartmentSchema
+from rest.schemas.employee import EmployeeSchema
+from rest.schemas.funcs import marsh, lomarsh
 
 MAX_ENTITY_NUM = 10
 
@@ -62,9 +65,9 @@ class DepartmentsTest(unittest.TestCase):
     def test_update(self):
         test_entity_new = Department.random()
         test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-        Operator.update(Department, test_entity_new.json())
-        self.assertEqual(test_entity_new.json(),
-                         Operator.get_by_id(Department, test_entity_new.id).json())
+
+        self.assertTrue(Operator.update(Department, marsh(
+            vars(test_entity_new), DepartmentSchema)))
 
 
 class EmployeesTest(unittest.TestCase):
@@ -111,11 +114,12 @@ class EmployeesTest(unittest.TestCase):
         test_entity_ref_id = Operator.get_by_id(
             Employee, test_entity_id).department_id
         Operator.remove(Employee, test_entity_id)
-        self.assertIsNotNone(Operator.get_by_id(Department, test_entity_ref_id))
+        self.assertIsNotNone(Operator.get_by_id(
+            Department, test_entity_ref_id))
 
     def test_update(self):
         test_entity_new = Employee.random()
         test_entity_new.id = random.randint(1, MAX_ENTITY_NUM)
-        Operator.update(Employee, test_entity_new.json())
-        self.assertEqual(test_entity_new.json(),
-                         Operator.get_by_id(Employee, test_entity_new.id).json())
+        Operator.update(Employee, marsh(test_entity_new, EmployeeSchema))
+        self.assertEqual(marsh(test_entity_new, EmployeeSchema),
+                         marsh(Operator.get_by_id(Employee, test_entity_new.id), EmployeeSchema))

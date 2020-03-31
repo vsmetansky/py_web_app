@@ -7,5 +7,5 @@ export CLIENT_CONFIG="./config/app.conf"
 export CLIENT_BASE_URL="localhost:7000"
 export API_BASE_URL="localhost:8000"
 export CLIENT_LOG_DIR="./logs/error.log"
-gunicorn -c config/gunicorn.py wsgi:APP --reload
+gunicorn -c config/gunicorn.py wsgi:APP
 bash scripts/del_cache.sh

@@ -1,7 +1,7 @@
 from views.base import Base
 
 
-class Departments(Base):
+class Employees(Base):
     def __init__(self, templates, api_url):
         super().__init__(templates, api_url)
 
@@ -14,7 +14,4 @@ class Departments(Base):
         ), entities))
 
     def _transform_one(self, entity):
-        return entity
-
-    def _get_avg(self, emps):
-        return sum(e.get('salary') for e in emps) / len(emps)
+        raise NotImplementedError

@@ -5,66 +5,63 @@ Exported classes:
     EmployeeApi: a resource, containing GET, PUT and DELETE request handlers.
 """
 
-from datetime import datetime
-
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import Resource, reqparse
+from sqlalchemy.exc import IntegrityError, InternalError, ArgumentError
+from marshmallow import fields, ValidationError
+from flask_restful import Resource, abort
+from flask import request
 
 from models.employee import Employee
 from service.operator import Operator
-from rest.utility.jsonresponse import data_response, error_response
-
-PARSER = reqparse.RequestParser()
-
-
-def add_employee_args():
-    """Adds arguments to the parser"""
-
-    PARSER.add_argument('name', type=str)
-    PARSER.add_argument('salary', type=int)
-    PARSER.add_argument('birthdate', type=str)
-    PARSER.add_argument('department_id', type=int)
+from rest.schemas.employee import EmployeeSchema, EmployeeSearchSchema
+from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
 class EmployeesApi(Resource):
     """Contains GET and POST request handlers for employee table.
 
-    Given class groups handlers which do not require item's id to
+    Groups handlers which do not require item's id to
     perform a database request.
     """
 
+    @marsh_with(EmployeeSchema, to_many=True)
     def get(self):
-        """Returns all the employees from the db using data_response."""
+        """Returns filtered list of employees from the db using marshal."""
+        try:
+            search_params = lomarsh(request.args, EmployeeSearchSchema)
+            return Operator.get_all(Employee, search_expr=self._get_search_expr(search_params))
+        except ValidationError:
+            abort(400)
 
-        employees = Operator.get_all(Employee)
-        return data_response(Employee.json_list(employees))
-
+    @marsh_with_field(fields.Integer())
     def post(self):
         """Adds an employee to the database.
 
         Returns:
-            Employee's id using data_response or
-            error object using error_response.
+            Employee's id using marshal or
+            aborts with code 400.
         """
 
-        add_employee_args()
         try:
-            raw_data = PARSER.parse_args()
-            employee = self.__employee_from_raw(raw_data)
-            Operator.insert(employee)
-            return data_response(employee.id)
-        except IntegrityError:
-            return error_response(400)
+            raw_data = lomarsh(request.form, EmployeeSchema)
+            raw_data['id'] = None
+            return Operator.insert(Employee(**raw_data))
+        except (IntegrityError, ValidationError):
+            abort(400)
 
-    def __employee_from_raw(self, raw_data):
-        return Employee(department_id=raw_data['department_id'],
-                        name=raw_data['name'], salary=raw_data['salary'],
-                        birthdate=self.__date_from_raw(raw_data['birthdate']))
-
-    def __date_from_raw(self, raw_date):
-        return datetime.strptime(raw_date, '%Y-%m-%d').date()
+    # pylint: disable=E1101
+    def _get_search_expr(self, s_params):
+        try:
+            search_expr = [
+                Employee.birthdate >= s_params.get('begin'),
+                Employee.birthdate <= s_params.get('end')
+            ]
+            if s_params.get('name'):
+                search_expr.append(Employee.name.like(
+                    f'%{s_params.get("name")}%'))
+            return search_expr
+        except ArgumentError:
+            return None
 
 
 class EmployeeApi(Resource):
@@ -74,47 +71,45 @@ class EmployeeApi(Resource):
     perform a database request.
     """
 
+    @marsh_with(EmployeeSchema)
     def get(self, id_):
         """Gets an employee from the database by the id.
 
         Returns:
-            Retreived employee using data_response or
-            error object using error_response.
+            Retreived employee using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            employee = Operator.get_by_id(Employee, id_)
-            return data_response(employee.json())
-        except AttributeError:
-            return error_response(404)
+        entity = Operator.get_by_id(Employee, id_)
+        return entity if entity else abort(404)
 
+    @marsh_with_field(fields.Boolean())
     def put(self, id_):
         """Updates an employee from the database by the id.
 
         Returns:
             True (if the operation was successful)
-            or False using data_response or
-            error object using error_response.
+            or False using marshal or aborts
+            with 400 code.
         """
 
-        add_employee_args()
         try:
-            raw_data = PARSER.parse_args()
+            raw_data = lomarsh(request.form, EmployeeSchema)
             raw_data['id'] = id_
-            return data_response(Operator.update(Employee, raw_data))
-        except IntegrityError:
-            return error_response(404)
+            return Operator.update(Employee, raw_data)
+        except (IntegrityError, InternalError, ValidationError):
+            abort(400)
 
+    # pylint: disable=R1710
+    @marsh_with(EmployeeSchema, to_many=True)
     def delete(self, id_):
         """Deletes an employee from the database by the id.
 
         Returns:
-            All the employees from the db using data_response or
-            error object using error_response.
+            All the employees from the db using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            Operator.remove(Employee, id_)
-            return data_response(Employee.json_list(Operator.get_all(Employee)))
-        except UnmappedInstanceError:
-            return error_response(404)
+        if Operator.remove(Employee, id_):
+            return Operator.get_all(Employee)
+        abort(404)

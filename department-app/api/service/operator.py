@@ -11,13 +11,18 @@ class Operator:
     """Contains methods to perform CRUD operations."""
 
     @classmethod
-    def get_all(cls, model):
-        """Gets all rows of given model from the database.
+    def get_all(cls, model, search_expr=None, search_args=None):
+        """Gets all rows of given model from the database or
+        a list of rows, that corresponds to provided filter.
 
         Returns:
             A list of fetched rows in the form of objects.
         """
 
+        if search_args:
+            return model.query.filter_by(**search_args).all()
+        if search_expr:
+            return model.query.filter(*search_expr).all()
         return model.query.all()
 
     @classmethod
@@ -33,7 +38,6 @@ class Operator:
     @classmethod
     def insert(cls, value):
         """Inserts given row into the database."""
-
         DB.session.add(value)
         DB.session.commit()
 
@@ -42,9 +46,9 @@ class Operator:
     @classmethod
     def remove(cls, model, id_):
         """Removes a row from the database by the id."""
-
-        model.query.filter_by(id=id_).delete()
+        effected_rows = model.query.filter_by(id=id_).delete()
         DB.session.commit()
+        return bool(effected_rows)
 
     @classmethod
     def update(cls, model, upd_data):
@@ -55,9 +59,7 @@ class Operator:
             otherwise.
         """
 
-        old_value = model.query.get(upd_data.get('id'))
-        if old_value:
-            model.query.filter_by(id=old_value.id).update(upd_data)
-            DB.session.commit()
-            return True
-        return False
+        effected_rows = model.query.filter_by(
+            id=upd_data.get('id')).update(upd_data)
+        DB.session.commit()
+        return bool(effected_rows)

@@ -14,7 +14,6 @@ from extensions import API, DB, MIGRATE
 
 def add_resources(api):
     """Adds resources to REST application programming interface."""
-
     api.add_resource(DepartmentsApi, '/departments')
     api.add_resource(DepartmentApi, '/departments/<int:id_>')
     api.add_resource(EmployeesApi, '/employees')

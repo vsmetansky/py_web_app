@@ -6,14 +6,14 @@ Exported classes:
 """
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import UnmappedInstanceError
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, abort
+from marshmallow import fields, ValidationError
+from flask import request
 
 from models.department import Department
 from service.operator import Operator
-from rest.utility.jsonresponse import data_response, error_response
-
-PARSER = reqparse.RequestParser()
+from rest.schemas.department import DepartmentSchema, DepartmentSearchSchema
+from rest.schemas.funcs import lomarsh, marsh_with, marsh_with_field
 
 
 # pylint: disable=R0201
@@ -24,28 +24,36 @@ class DepartmentsApi(Resource):
     perform a database request.
     """
 
+    @marsh_with(DepartmentSchema, to_many=True)
     def get(self):
-        """Returns all the departments from the db using data_response."""
+        """Returns filtered list of departments from the db using marshal."""
+        try:
+            search_params = lomarsh(request.args, DepartmentSearchSchema)
+            return Operator.get_all(Department, search_expr=self._get_search_expr(search_params))
+        except ValidationError:
+            abort(400)
 
-        departments = Operator.get_all(Department)
-        return data_response(Department.json_list(departments))
-
+    @marsh_with_field(fields.Integer())
     def post(self):
         """Adds a department to the database.
 
         Returns:
-            Department's id using data_response or
-            error object using error_response.
+            Department's id using marshal or
+            aborts with 404.
         """
 
-        PARSER.add_argument('name', type=str)
         try:
-            raw_data = PARSER.parse_args()
-            department = Department(name=raw_data['name'])
-            Operator.insert(department)
-            return data_response(department.id)
+            raw_data = lomarsh(request.form, DepartmentSchema)
+            raw_data['id'] = None
+            return Operator.insert(Department(**raw_data))
         except IntegrityError:
-            return error_response(404)
+            abort(400)
+
+    # pylint: disable=E1101
+    def _get_search_expr(self, s_params):
+        if s_params.get('name'):
+            return (Department.name.like(f'%{s_params.get("name")}%'),)
+        return None
 
 
 class DepartmentApi(Resource):
@@ -55,47 +63,45 @@ class DepartmentApi(Resource):
     perform a database request.
     """
 
+    @marsh_with(DepartmentSchema)
     def get(self, id_):
         """Gets a department from the database by the id.
 
         Returns:
-            Retreived department using data_response or
-            error object using error_response.
+            Retreived department using marshal or
+            aborts with 404 if department was not present.
         """
 
-        try:
-            department = Operator.get_by_id(Department, id_)
-            return data_response(department.json())
-        except AttributeError:
-            return error_response(404)
+        entity = Operator.get_by_id(Department, id_)
+        return entity if entity else abort(404)
 
+    @marsh_with_field(fields.Boolean())
     def put(self, id_):
         """Updates a department from the database by the id.
 
         Returns:
             True (if the operation was successful)
-            or False using data_response or
-            error object using error_response.
+            or False using marshal or aborts with
+            code 400.
         """
 
-        PARSER.add_argument('name', type=str)
         try:
-            raw_data = PARSER.parse_args()
+            raw_data = lomarsh(request.form, DepartmentSchema)
             raw_data['id'] = id_
-            return data_response(Operator.update(Department, raw_data))
-        except IntegrityError:
-            return error_response(400)
+            return Operator.update(Department, raw_data)
+        except (IntegrityError, ValidationError):
+            abort(400)
 
+    # pylint: disable=R1710
+    @marsh_with(DepartmentSchema, to_many=True)
     def delete(self, id_):
         """Deletes a department from the database by the id.
 
         Returns:
-            All the departments from the db using data_response or
-            error object using error_response.
+            All the departments from the db using marshal or
+            aborts with 404 code.
         """
 
-        try:
-            Operator.remove(Department, id_)
-            return data_response(Department.json_list(Operator.get_all(Department)))
-        except UnmappedInstanceError:
-            return error_response(404)
+        if Operator.remove(Department, id_):
+            return Operator.get_all(Department)
+        abort(404)

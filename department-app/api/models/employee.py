@@ -12,7 +12,6 @@ from faker import Faker
 from faker.providers import date_time
 
 from extensions import DB
-from models.utility.jsonserializer import JsonSerializer
 from models.utility.randomizer import Randomizer
 from models.department import Department
 from service.operator import Operator
@@ -21,7 +20,7 @@ MIN_SALARY = 500
 MAX_SALARY = 10000
 
 
-class Employee(DB.Model, JsonSerializer, Randomizer):
+class Employee(DB.Model, Randomizer):
     """ORM representation for 'employee' table in the database.
 
     This class is, basically, a relation schema for 'employee'

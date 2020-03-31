@@ -2,6 +2,18 @@
 {% block title %}Departments{% endblock %}
 {% block content %}
 {% for department in data%}
-    
+<div class="card-sm">
+    <div class="card-header">
+        <button class="upd-button" onclick="">Update</button>
+        <a href="{{ url_for('departments', id_=department.id) }}">
+            <h1 class="card-sm-name">{{ department.name }}</h1>
+        </a>
+        <button class="del-button" onclick="">Delete</button>
+    </div>
+    <div class="card-footer">
+        <p class="card-info left">Employees number: {{ department.emps_num }}</p>
+        <p class="card-info right">Average salary: ${{ department.avg }}</p>
+    </div>
+</div>
 {% endfor %}
 {% endblock %}

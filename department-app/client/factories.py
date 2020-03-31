@@ -5,14 +5,30 @@ Exported functions:
     create_test_app: Creates a Flask application for testing purposes.
 """
 
+import os
+
 from flask import Flask
 
+from views.base import Templates
 from views.departments import Departments
+from views.employees import Employees
+
+
+API_BASE_URL = os.environ['API_BASE_URL']
+DEPARTMENTS_API_URL = f'http://{API_BASE_URL}/departments'
+EMPLOYEES_API_URL = f'http://{API_BASE_URL}/employees'
 
 
 def register_routes(app):
-    app.add_url_rule('/departments',
-                     view_func=Departments.as_view('departments'))
+    Departments.register(
+        app, 'departments', '/departments/',
+        Templates('department.html', 'departments.html'),
+        DEPARTMENTS_API_URL)
+
+    Employees.register(
+        app, 'employees', '/employees/',
+        Templates('employee.html', 'employees.html'),
+        EMPLOYEES_API_URL)
 
 
 def create_app():
