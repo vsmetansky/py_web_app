@@ -9,9 +9,8 @@ from datetime import datetime
 
 from marshmallow import Schema, fields, validates_schema, ValidationError
 
-from models.employee import Employee
 
-
+# pylint: disable=R0201
 class EmployeeSchema(Schema):
     """Schema mapping for 'Employee' model."""
 
@@ -22,7 +21,7 @@ class EmployeeSchema(Schema):
     birthdate = fields.Str()
 
     @validates_schema
-    def validate_birthdate(self, data, **kwargs):
+    def _validate_birthdate(self, data, **kwargs):
         try:
             datetime.strptime(data['birthdate'], '%Y-%m-%d').date()
         except ValueError as e:
@@ -37,7 +36,7 @@ class EmployeeSearchSchema(Schema):
     end = fields.Str()
 
     @validates_schema
-    def validate_birth_range(self, data, **kwargs):
+    def _validate_birth_range(self, data, **kwargs):
         try:
             if data.get('begin'):
                 datetime.strptime(data.get('begin'), '%Y-%m-%d').date()

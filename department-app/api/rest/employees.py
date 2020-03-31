@@ -5,10 +5,7 @@ Exported classes:
     EmployeeApi: a resource, containing GET, PUT and DELETE request handlers.
 """
 
-from datetime import datetime
-
 from sqlalchemy.exc import IntegrityError, InternalError, ArgumentError
-from sqlalchemy.orm.exc import UnmappedInstanceError
 from marshmallow import fields, ValidationError
 from flask_restful import Resource, abort
 from flask import request
@@ -32,7 +29,7 @@ class EmployeesApi(Resource):
         """Returns filtered list of employees from the db using marshal."""
         try:
             search_params = lomarsh(request.args, EmployeeSearchSchema)
-            return Operator.get_all(Employee, search_expr=self.get_search_expr(search_params))
+            return Operator.get_all(Employee, search_expr=self._get_search_expr(search_params))
         except ValidationError:
             abort(400)
 
@@ -52,14 +49,16 @@ class EmployeesApi(Resource):
         except (IntegrityError, ValidationError):
             abort(400)
 
-    def get_search_expr(self, s_params):
+    # pylint: disable=E1101
+    def _get_search_expr(self, s_params):
         try:
             search_expr = [
                 Employee.birthdate >= s_params.get('begin'),
                 Employee.birthdate <= s_params.get('end')
             ]
             if s_params.get('name'):
-                search_expr.append(Employee.name.like(f'%{s_params.get("name")}%'))
+                search_expr.append(Employee.name.like(
+                    f'%{s_params.get("name")}%'))
             return search_expr
         except ArgumentError:
             return None
@@ -101,6 +100,7 @@ class EmployeeApi(Resource):
         except (IntegrityError, InternalError, ValidationError):
             abort(400)
 
+    # pylint: disable=R1710
     @marsh_with(EmployeeSchema, to_many=True)
     def delete(self, id_):
         """Deletes an employee from the database by the id.

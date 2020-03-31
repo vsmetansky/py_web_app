@@ -7,7 +7,6 @@ Exported classes:
 
 from marshmallow import Schema, fields
 
-from models.department import Department
 from rest.schemas.employee import EmployeeSchema
 
 

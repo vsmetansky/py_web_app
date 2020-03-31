@@ -4,8 +4,6 @@ Exported classes:
     Operator: contains methods to perform CRUD operations.
 """
 
-from copy import copy
-
 from extensions import DB
 
 
@@ -14,7 +12,7 @@ class Operator:
 
     @classmethod
     def get_all(cls, model, search_expr=None, search_args=None):
-        """Gets all rows of given model from the database or 
+        """Gets all rows of given model from the database or
         a list of rows, that corresponds to provided filter.
 
         Returns:
@@ -23,7 +21,7 @@ class Operator:
 
         if search_args:
             return model.query.filter_by(**search_args).all()
-        elif search_expr:
+        if search_expr:
             return model.query.filter(*search_expr).all()
         return model.query.all()
 
@@ -50,7 +48,7 @@ class Operator:
         """Removes a row from the database by the id."""
         effected_rows = model.query.filter_by(id=id_).delete()
         DB.session.commit()
-        return True if effected_rows else False
+        return bool(effected_rows)
 
     @classmethod
     def update(cls, model, upd_data):
@@ -64,4 +62,4 @@ class Operator:
         effected_rows = model.query.filter_by(
             id=upd_data.get('id')).update(upd_data)
         DB.session.commit()
-        return True if effected_rows else False
+        return bool(effected_rows)

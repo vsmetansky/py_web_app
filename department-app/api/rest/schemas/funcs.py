@@ -38,7 +38,7 @@ def marsh_with_field(field):
     """Decorator to serialize flask resource return values via field.
 
     Returns:
-        Wrapper function, that returns a tuple of JSON-like object 
+        Wrapper function, that returns a tuple of JSON-like object
         with single 'data' field and HTTP code.
     """
 

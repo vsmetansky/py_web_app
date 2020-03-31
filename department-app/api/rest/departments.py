@@ -6,7 +6,6 @@ Exported classes:
 """
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.exc import UnmappedInstanceError
 from flask_restful import Resource, abort
 from marshmallow import fields, ValidationError
 from flask import request
@@ -30,7 +29,7 @@ class DepartmentsApi(Resource):
         """Returns filtered list of departments from the db using marshal."""
         try:
             search_params = lomarsh(request.args, DepartmentSearchSchema)
-            return Operator.get_all(Department, search_expr=self.get_search_expr(search_params))
+            return Operator.get_all(Department, search_expr=self._get_search_expr(search_params))
         except ValidationError:
             abort(400)
 
@@ -50,9 +49,11 @@ class DepartmentsApi(Resource):
         except IntegrityError:
             abort(400)
 
-    def get_search_expr(self, s_params):
+    # pylint: disable=E1101
+    def _get_search_expr(self, s_params):
         if s_params.get('name'):
             return (Department.name.like(f'%{s_params.get("name")}%'),)
+        return None
 
 
 class DepartmentApi(Resource):
@@ -91,6 +92,7 @@ class DepartmentApi(Resource):
         except (IntegrityError, ValidationError):
             abort(400)
 
+    # pylint: disable=R1710
     @marsh_with(DepartmentSchema, to_many=True)
     def delete(self, id_):
         """Deletes a department from the database by the id.
